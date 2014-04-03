@@ -503,6 +503,29 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 		cmd[9] = initialPosition;
 		return cmd;
 	}
+	
+	public static String[] getUnixCommandBin()
+	{
+		//String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle 
+		// -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
+		String[] cmd = new String[8];
+		cmd[0] = "java";
+		cmd[1] = "-Xmx512M";
+		cmd[2] = "-cp";
+		cmd[3] = Settings.getInstallPath() + "lib/rita.jar:"  + Settings.getInstallPath() + "lib/robocode.ui-1.7.3.6.jar:" + Settings.getInstallPath() + "lib/robocode.jar";
+		cmd[4] = "robocode.Robocode";
+		cmd[5] = "-nodisplay";
+		cmd[6] = "-battle " + Settings.getInstallPath() + "battles" + File.separator + "batalla.battle";	
+		cmd[7] = "-record " + Settings.getBinaryPath() + File.separator + "batalla.bin";
+		/*cmd[5] = Settings.getInstallPath(); //1er argumento
+		cmd[6] = Settings.getProperty("defaultpackage") + "."
+				+ HelperEditor.currentRobotName; //2do argumento
+		//cmd[7] = BatallaConfig.chooseEnemy(Settings.getProperty("level.default")); //3er argumento
+		cmd[7] = BatallaConfig.chooseEnemy(Language.get("level.four")); //3er argumento
+		cmd[8] = roundsNumber != null ? roundsNumber.toString() : Integer.toString(Batalla.NUMBER_OF_ROUNDS); // 4to argumento Número de rondas
+		*/
+		return cmd;
+	}
 
 	public static void callBatalla(Integer roundsNumber, String initialPosition) {
 		String[] cmd;
