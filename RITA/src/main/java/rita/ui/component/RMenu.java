@@ -50,6 +50,17 @@ public class RMenu {
 	private static final JMenu menuInf = new JMenu(Language.get("information"));
 //	private static final JMenu menuSetting = new JMenu(Language.get("setting"));
 	// private static final JMenu menuHelp = new JMenu(Language.get("help"));
+	
+	//Rita en Red
+	private static final JMenu menuNet = new JMenu(Language.get("network"));
+	
+	// Desplegable Red
+		private static final JMenuItem menuNetServer = new JMenuItem(Language.get("server"),
+				KeyEvent.VK_S);
+
+		private static final JMenuItem menuNetClient = new JMenuItem(Language
+				.get("client"), KeyEvent.VK_C);
+		
 
 	// Desplegable File
 	private static final JMenuItem menuNew = new JMenuItem(Language.get("new"),
@@ -79,6 +90,7 @@ public class RMenu {
 		menuBar.add(menuInf);
 //		menuBar.add(menuSetting);
 		// menuBar.add(menuHelp);
+		menuBar.add(menuNet);
 
 		menuRobots.add(menuNew);
 		menuRobots.add(menuOpen);
@@ -89,6 +101,9 @@ public class RMenu {
 		menuEdit.add(menuPreferences);
 		menuInf.add(menuAbout);
 		
+		//Rita en Red
+		menuNet.add(menuNetServer);
+		menuNet.add(menuNetClient);
 		
 		final WorkspaceController wcTemp = wc;
 		
@@ -163,6 +178,26 @@ public class RMenu {
 				new DialogAbout(parentWindow);
 			}
 		});
+		
+		// Menu Rita en Red
+		menuNetClient.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new DialogClientRita(parentWindow,"Cliente",false);
+				
+			}
+		});
+		
+		menuNetServer.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new DialogServerRita(parentWindow,"Servidor",false);
+				
+			}
+		});
+
 	}
 
 	public JMenuBar getMenuBar() {
