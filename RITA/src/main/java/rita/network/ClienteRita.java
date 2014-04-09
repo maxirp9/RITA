@@ -113,7 +113,7 @@ public class ClienteRita extends Thread {
 
 	public void ejecutarRobocode() {		
 		
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp /home/pvilaltella/workspaceJava/git/RITA/RITA/robots:" + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
 		
 		log.error(cmd);
 		log.info("Se ejecuta Robocode en el cliente "

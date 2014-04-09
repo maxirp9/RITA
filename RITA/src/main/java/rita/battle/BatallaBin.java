@@ -142,19 +142,19 @@ public class BatallaBin {
 	}
 
 	public static void generarArchivoBinario() {
-		//String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
-		String[] arg = new String[1];
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp /home/pvilaltella/workspaceJava/git/RITA/RITA/robots:" + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
+		//String[] arg = new String[1];
 		
-		SourceCode.getInstance();
+		// SourceCode.getInstance();
 		// arg[0] = "-battle " + directorioRobocodeBatallas + File.separator + "batalla.battle";
 		//arg[0] = "-replay"; 
 		// arg[2] = "-record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
 		//HiddenAccess.robocodeMain(arg);
 		//Robocode.main(arg);
-		//System.out.println(cmd);
-		String[] cmd = SourceCode.getUnixCommandBin();
+		System.out.println(cmd);
+		//String[] cmd = SourceCode.getUnixCommandBin();
 		
-		Process proc;
+		/*Process proc;
 		InputStreamReader isr = null;
 		BufferedReader br = null;
 		try {
@@ -178,9 +178,9 @@ public class BatallaBin {
 			} else if(isr!=null) {
 				try { isr.close(); } catch(IOException ignored) { }				
 			}
-		}
+		}*/
 		
-		//EjecutarComando comando = new EjecutarComando(cmd);				
+		EjecutarComando comando = new EjecutarComando(cmd);				
 	}
 	
 	public static void borrarArchivoBatalla(){

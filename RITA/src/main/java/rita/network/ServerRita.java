@@ -1,10 +1,15 @@
 package rita.network;
 
+import net.sf.robocode.cachecleaner.CacheCleaner;
+import net.sf.robocode.io.FileUtil;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import rita.battle.BatallaBin;
+import rita.settings.Settings;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
@@ -229,6 +234,13 @@ public class ServerRita extends Thread {
 		log.info("Compila los archivo .java");
 		BatallaBin.crearArchivoBatalla(mensajes);
 		log.info("Se creo el archivo .battle de configuracion");
+		//TODO: EJECUTAR ROBOCODE EN NO DISPLAY PARA PROBAR.
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + Settings.getInstallPath() + "lib/robocode.jar robocode.Robocode -battle battles/batalla.battle -nodisplay -results /tmp/results.txt";
+		EjecutarComando comando = new EjecutarComando(cmd);
+		
+		log.info("Comando: Ejecuta con NO DISPLAY " + cmd);
+		//FileUtil.getRobotDatabaseFile().delete();
+		//CacheCleaner.clean();
 		BatallaBin.generarArchivoBinario();
 		log.info("Ejecuta la batalla y crea el bin");
 		mensajes.setGeneroBin(true);
