@@ -215,3 +215,10 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+#Agregados por RitaEnRed
+log/
+robots/
+robotsnet/
+binary/
+battles/
