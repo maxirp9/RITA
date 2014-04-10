@@ -184,7 +184,7 @@ public class DialogServerRita extends JDialog implements Observer {
 		while (interfaces.hasMoreElements()){
 		    NetworkInterface current = interfaces.nextElement();
 		    //System.out.println("1er " + current);		    
-		    if (current.getName().startsWith("eth")){
+		    if (current.getName().startsWith("eth") || current.getName().startsWith("wlan") ){
 			    try {
 					if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
 				} catch (SocketException e) {
