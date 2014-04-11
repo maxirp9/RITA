@@ -111,9 +111,9 @@ public class BatallaBin {
 		
 		for (int i = 0; i < array.size(); i++) {
 			if (i == array.size()-1)
-				ret += Settings.getProperty("defaultpackage") + "." + array.get(i);
+				ret += Settings.getProperty("defaultpackage") + "." + array.get(i) + "*";
 			else
-				ret += Settings.getProperty("defaultpackage") + "." + array.get(i) + union;
+				ret += Settings.getProperty("defaultpackage") + "." + array.get(i) + "*" + union;
 		}
 		return ret;
 
