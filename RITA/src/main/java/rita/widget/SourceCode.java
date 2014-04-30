@@ -300,7 +300,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	private File saveSourceCode() throws FileNotFoundException, IOException {
+	public File saveSourceCode() throws FileNotFoundException, IOException {
 		final String fullPath = Settings.getRobotsPath()
 				+ File.separator
 				+ HelperEditor.currentRobotPackage.replace(".",
