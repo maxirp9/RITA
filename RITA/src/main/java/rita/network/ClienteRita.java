@@ -1,6 +1,7 @@
 package rita.network;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -9,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import rita.settings.Settings;
 import rita.ui.component.DialogClientRita;
+import rita.widget.SourceCode;
 
 public class ClienteRita extends Thread {
 
@@ -59,7 +61,8 @@ public class ClienteRita extends Thread {
 		// Obtiene el flujo de entrada del socket
 		if (this.hayPedidoRobot()){
 			conexionServidor.iniciarConexionSalida();
-			conexionServidor.enviarArchivo(robot); // Usamos el nombre del usuario PROVISORIAMENTE para la prueba
+			this.guardarCodigoFuente();
+			conexionServidor.enviarArchivo(robot);
 		}
 		else
 			log.error("Falla del pedido de robot del Cliente: "
@@ -87,6 +90,21 @@ public class ClienteRita extends Thread {
 			ejecutarRobocode();
 		} catch (NullPointerException ex) {
 			log.error("El socket no se creo correctamente. ");
+		}
+	}
+
+	private void guardarCodigoFuente() {
+		
+		SourceCode sourceCode = SourceCode.getInstance();
+		
+		try {
+			sourceCode.saveSourceCode();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
