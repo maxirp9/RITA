@@ -34,7 +34,6 @@ public class DialogClientRita extends JDialog {
 	private static final long serialVersionUID = 4883632658186677601L;
 	private JTextField textFieldIP;
 	private JTextField textFieldPuerto;
-	private JTextField textFieldRobot;
 	
 	private ConexionServidor conexionServidor;
 	private Socket socket;
@@ -112,11 +111,10 @@ public class DialogClientRita extends JDialog {
 			lblRobot.setBounds(41, 77, 70, 15);
 			panel.add(lblRobot);
 			
-			textFieldRobot = new JTextField();
-			textFieldRobot.setText(HelperEditor.currentRobotName);
-			textFieldRobot.setBounds(112, 77, 114, 19);
-			panel.add(textFieldRobot);
-			textFieldRobot.setColumns(10);
+			JLabel lblRobotName = new JLabel("");
+			lblRobotName.setBounds(112, 77, 114, 15);
+			lblRobotName.setText(HelperEditor.currentRobotName);			
+			panel.add(lblRobotName);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -128,8 +126,8 @@ public class DialogClientRita extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 					
 						log.info("Quieres conectarte a " + textFieldIP.getText() + " en el puerto " + textFieldPuerto.getText()
-								+ " con el nombre de usuario: " + textFieldRobot.getText() + ".");
-						clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), textFieldRobot.getText());
+								+ " con el nombre de usuario: " + HelperEditor.currentRobotName + ".");
+						clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
 						clienteRita.start();
 					}
 				});
@@ -152,7 +150,7 @@ public class DialogClientRita extends JDialog {
 		// Obtiene el flujo de entrada del socket
 		if (this.hayPedidoRobot()){
 			conexionServidor.iniciarConexionSalida();
-			conexionServidor.enviarArchivo(textFieldRobot.getText()); // Usamos el nombre del usuario PROVISORIAMENTE para la prueba
+			conexionServidor.enviarArchivo(HelperEditor.currentRobotName);
 		}
 		else
 			log.error("Falla del pedido de robot del Cliente: "
