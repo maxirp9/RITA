@@ -50,6 +50,8 @@ public class ServerRita extends Thread {
 
 	private ServerSocket serverSocket;
 	private boolean start = false;
+	
+	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
 
 	public boolean isStart() {
 		return start;
@@ -180,6 +182,8 @@ public class ServerRita extends Thread {
 						e.printStackTrace();
 					}
 				}
+				// Ejecuto Robocode en el Servidor
+				this.ejecutarRobocode();
 				// Pongo en false para queden esperando nuevamente los hilos
 				closeServerSocket();
 				createServerSocket();
@@ -191,6 +195,15 @@ public class ServerRita extends Thread {
 			}
 		}// Cierre while del cierre del servidor
 
+	}
+	
+	public void ejecutarRobocode() {		
+		
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
+		log.error(cmd);
+		log.info("Se ejecuta Robocode en el Servidor");
+		EjecutarComando comando = new EjecutarComando(cmd);		
+		
 	}
 
 	private void reiniciarVariables() {
@@ -229,18 +242,10 @@ public class ServerRita extends Thread {
 	}
 
 	private void executeBattle() {
-
 		BatallaBin.compilarRobots(mensajes);
 		log.info("Compila los archivo .java");
 		BatallaBin.crearArchivoBatalla(mensajes);
 		log.info("Se creo el archivo .battle de configuracion");
-		//TODO: EJECUTAR ROBOCODE EN NO DISPLAY PARA PROBAR.
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + Settings.getInstallPath() + "lib/robocode.jar robocode.Robocode -battle battles/batalla.battle -nodisplay -results /tmp/results.txt";
-		EjecutarComando comando = new EjecutarComando(cmd);
-		
-		log.info("Comando: Ejecuta con NO DISPLAY " + cmd);
-		//FileUtil.getRobotDatabaseFile().delete();
-		//CacheCleaner.clean();
 		BatallaBin.generarArchivoBinario();
 		log.info("Ejecuta la batalla y crea el bin");
 		mensajes.setGeneroBin(true);

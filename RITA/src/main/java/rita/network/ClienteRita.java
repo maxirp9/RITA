@@ -21,6 +21,7 @@ public class ClienteRita extends Thread {
 	private String ip;
 	private int port;
 	private String robot;
+	private boolean ejecutarRobocode = false;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
 
@@ -41,6 +42,8 @@ public class ClienteRita extends Thread {
 			socket = new Socket(ip, port);
 			conexionServidor = new ConexionServidor(socket, null, robot);
 			setMiDireccion(socket.getLocalAddress().getHostAddress());
+			if(!socket.getLocalAddress().getHostName().equals("localhost"))
+				this.ejecutarRobocode = true;
 		} catch (UnknownHostException ex) {
 			log.error("No se ha podido conectar con el servidor ("
 					+ ex.getMessage() + ").");							
@@ -87,7 +90,8 @@ public class ClienteRita extends Thread {
 						+ " espera BinGenerado y recibe mensaje incorrecto:"
 						+ mensajeRecibido.accion);
 
-			ejecutarRobocode();
+			if(this.ejecutarRobocode)
+				ejecutarRobocode();
 		} catch (NullPointerException ex) {
 			log.error("El socket no se creo correctamente. ");
 		}
@@ -131,7 +135,7 @@ public class ClienteRita extends Thread {
 
 	public void ejecutarRobocode() {		
 		
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp /home/pvilaltella/workspaceJava/git/RITA/RITA/robots:" + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
 		
 		log.error(cmd);
 		log.info("Se ejecuta Robocode en el cliente "
