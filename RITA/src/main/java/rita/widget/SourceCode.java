@@ -63,6 +63,7 @@ import rita.compiler.CompileString;
 import rita.settings.HelperEditor;
 import rita.settings.Language;
 import rita.settings.Settings;
+import rita.ui.component.DialogClientRita;
 import rita.ui.component.DialogNewRobot;
 import rita.ui.component.DialogSelectEnemies;
 import rita.ui.component.MessageDialog;
@@ -95,7 +96,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 	private static int MAX_HEIGHT;
 
 	static {
-		MAX_WIDTH = 320;
+		MAX_WIDTH = 360;
 		MAX_HEIGHT = 340 + BUTTON_HEIGHT;
 		/* ajustar ancho y alto con valores de acuerdo a si el tama�o de la
 		*  pantalla es com�n o si es la de una netbook */
@@ -105,7 +106,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 		}
 	}
 	/* distancia del lado derecho del widget al lado derecho de la ventana */
-	private static final int OFFSET_FROM_RIGHT = 50;
+	private static final int OFFSET_FROM_RIGHT = 30;
 	/* distancia del lado inferior del widget al lado inferior de la ventana */
 	private static final int OFFSET_FROM_BOTTOM = 150;
 	
@@ -129,6 +130,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 	private boolean minimized = true;
 	private JButton codeButton;
 	private JButton compileButton;
+	private JButton redButton;
 	private boolean expanded = false;
 	private Font smallButtonFont;
 
@@ -273,14 +275,17 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 		this.enlarger = new SourceCodeEnlargerTimer();
 		createHideCodeButton();
 		createCompileButton();
+		createRedButton();
 		prepareCodeRegion();
 		add(codeButton);
 		add(compileButton);
+		add(redButton);
 		add(paneJavaCode.getWrappingContainerWithLines());
 
 		Workspace.getInstance().addComponentListener(this);
 
 	}
+
 
 	private void createHideCodeButton() {
 
@@ -328,6 +333,39 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 		}
+	}
+
+	private void createRedButton() {
+
+		ImageIcon imgIcon = new ImageIcon(getClass().getResource("/images/sourcecode/network.png"));
+		this.redButton = new JButton(imgIcon);
+		this.redButton.setToolTipText("Para jugar por red");
+		redButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new DialogClientRita(paneJavaCode,"Cliente",false);
+				//new DialogClientRita();
+			}
+		});
+		
+		redButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				e.getComponent().setCursor(
+						Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				e.getComponent().setCursor(Cursor.getDefaultCursor());
+			}
+		});
+		
+		redButton.setBounds(MIN_WIDTH + 60, 0, MAX_WIDTH - MIN_WIDTH, BUTTON_HEIGHT);
+		redButton.setFont(smallButtonFont);
+		redButton.setAlignmentX(LEFT_ALIGNMENT);
+		redButton.setText("Jugar en Red");
 	}
 
 	private void createCompileButton() {
@@ -457,7 +495,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 			}
 		});
 
-		compileButton.setBounds(MIN_WIDTH, 0, MAX_WIDTH-MIN_WIDTH, BUTTON_HEIGHT);
+		compileButton.setBounds(MIN_WIDTH, 0, MAX_WIDTH - MIN_WIDTH - 120, BUTTON_HEIGHT);
 		compileButton.setFont(smallButtonFont);
 		compileButton.setAlignmentX(LEFT_ALIGNMENT);
 		compileButton.setText(Language.get("compileButton.title"));
