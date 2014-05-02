@@ -38,7 +38,7 @@ import workspace.Workspace;
 import controller.WorkspaceController;
 
 /**
- * Esta clase representa el menú superior de la aplicación
+ * Esta clase representa el menï¿½ superior de la aplicaciï¿½n
  * 
  * @author Vanessa Aybar Rosales
  * */

@@ -18,6 +18,7 @@ import rita.network.EjecutarComando;
 import rita.network.Mensaje;
 import rita.settings.HelperEditor;
 import rita.settings.Settings;
+import rita.ui.sourcecodepane.ReadOnlySourceCodePane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -45,6 +46,12 @@ public class DialogClientRita extends JDialog {
 		super(parent);
 		initialize();
 	}
+	
+	public DialogClientRita(ReadOnlySourceCodePane parent, String titulo, boolean modal) {
+		super();
+		initialize();
+	}
+	
 	private void initialize() {
 		
 		try {
