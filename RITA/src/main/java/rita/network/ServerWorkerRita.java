@@ -21,12 +21,16 @@ public class ServerWorkerRita extends Thread implements Observer {
 	private ObjectInputStream entradaDatos;
 	private ObjectOutputStream salidaDatos;
 	private Mensajes mensajes;
+	private ClientesConectadosObservable clientes;
+	private ServerRita server;
 
 	static String directorioTempRobots = Settings.getRobotsnetPath();
 
-	public ServerWorkerRita(Socket socketEntrada, Mensajes mensajeEntrada) {
+	public ServerWorkerRita(Socket socketEntrada, Mensajes mensajeEntrada, ClientesConectadosObservable clientesEntrada, ServerRita serverInstance) {
 		socket = socketEntrada;
 		mensajes = mensajeEntrada;
+		clientes = clientesEntrada;
+		server = serverInstance;
 
 		try {
 			salidaDatos = new ObjectOutputStream(socket.getOutputStream());
@@ -130,6 +134,8 @@ public class ServerWorkerRita extends Thread implements Observer {
 			mensajes.incrementarCantidadRobots();
 			// Agrego el robot al listado para la batalla
 			mensajes.agregarRobot(nombreArchivo);
+			
+			server.addRobotNames(nombreArchivo);
 			log.info("Ya termino la trasferencia del Robot del cliente: "
 					+ socket.getInetAddress().getHostAddress());
 			// Se cierra fichero

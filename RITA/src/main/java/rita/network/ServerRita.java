@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * @author pvilaltella
@@ -40,13 +42,15 @@ public class ServerRita extends Thread {
 	private String ip;
 
 	private Mensajes mensajes;
-	private CantidadConexionesObservable cantidadConexionesObservable;
+	private ClientesConectadosObservable clientesConectadosObservable;
 
 	private Logger log = Logger.getLogger(ServerRita.class);
 	private String textoLog;
 
 	private ServerSocket serverSocket;
 	private boolean start = false;
+	
+	private ArrayList<String> robotsEnBatalla;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
 	private LogRitaObservable logRitaObservable;
@@ -59,9 +63,9 @@ public class ServerRita extends Thread {
 		this.start = start;
 	}
 
-	public static ServerRita getInstance(int port, CantidadConexionesObservable cantidad) {
+	public static ServerRita getInstance(int port, ClientesConectadosObservable clientes) {
 		if (instance == null) {
-			instance = new ServerRita(port, cantidad);
+			instance = new ServerRita(port, clientes);
 		}
 		return instance;
 	}
@@ -72,7 +76,6 @@ public class ServerRita extends Thread {
 	private ServerRita() {
 		// this(DEFAULT_PORT_NUMBER, cantidad);
 		portNumber = DEFAULT_PORT_NUMBER;
-		cantidadConexionesObservable = new CantidadConexionesObservable();
 		mensajes = new Mensajes();
 		setLogRitaObsevable(new LogRitaObservable());
 	}
@@ -82,15 +85,15 @@ public class ServerRita extends Thread {
 	 * 
 	 * @param defaultPortNumber
 	 */
-	private ServerRita(int defaultPortNumber, CantidadConexionesObservable cantidad) {
-		
-		initialize(defaultPortNumber,cantidad);
+	private ServerRita(int defaultPortNumber, ClientesConectadosObservable clientes) {
+		initialize(defaultPortNumber,clientes);
 	}
 
-	private void initialize(int defaultPortNumber, CantidadConexionesObservable cantidad) {
+	private void initialize(int defaultPortNumber, ClientesConectadosObservable clientes) {
 		portNumber = defaultPortNumber;
-		cantidadConexionesObservable = cantidad;
+		clientesConectadosObservable = clientes;
 		mensajes = new Mensajes();
+		robotsEnBatalla = new ArrayList<String>();
 		setLogRitaObsevable(new LogRitaObservable());
 
 	}
@@ -117,7 +120,6 @@ public class ServerRita extends Thread {
 
 	public void setActiveConnectionCount(int activeConnectionCount) {
 		this.activeConnectionCount = activeConnectionCount;
-		cantidadConexionesObservable.changeData(activeConnectionCount);
 	}
 
 	public void run() {
@@ -148,7 +150,7 @@ public class ServerRita extends Thread {
 
 					if (!iniciarBatalla) {
 						// SUMO SOLO LOS CONECTADOS
-						setActiveConnectionCount(activeConnectionCount + 1);
+						//setActiveConnectionCount(activeConnectionCount + 1);
 						String texto = "Cliente con la IP "
 								+ socket.getInetAddress().getHostAddress()
 								+ " conectado.";
@@ -156,7 +158,7 @@ public class ServerRita extends Thread {
 						setTextoLog(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
-								socket, mensajes);
+								socket, mensajes, clientesConectadosObservable, this);
 						serverWorkerRita.start();
 					}
 
@@ -220,6 +222,9 @@ public class ServerRita extends Thread {
 		setIniciarBatalla(false);
 		// BatallaBin.borrarArchivoBatalla();
 		mensajes.getRobotsEnBatalla().clear();
+		robotsEnBatalla.clear();
+		//AVISO QUE CAMBIO TERMINO LA EJECUCION PARA LIMPIAR LOS ROBOTS EN PANTALLA
+		clientesConectadosObservable.changeData(robotsEnBatalla);
 
 	}
 
@@ -297,6 +302,10 @@ public class ServerRita extends Thread {
 		//cantidadConexionesObservable.changeData(activeConnectionCount);
 		this.textoLog = textoLog;
 		logRitaObservable.changeData(textoLog);
+	public void addRobotNames(String nombreArchivo) {
+		// TODO Auto-generated method stub
+		this.robotsEnBatalla.add(nombreArchivo);
+		clientesConectadosObservable.changeData(robotsEnBatalla);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -134,7 +135,14 @@ public class DialogClientRita extends JDialog {
 					
 						log.info("Quieres conectarte a " + textFieldIP.getText() + " en el puerto " + textFieldPuerto.getText()
 								+ " con el nombre de usuario: " + HelperEditor.currentRobotName + ".");
-						clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
+						try {
+							clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
+								    JOptionPane.ERROR_MESSAGE);
+						}
 						clienteRita.start();
 					}
 				});
