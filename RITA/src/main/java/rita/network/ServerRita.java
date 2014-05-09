@@ -139,7 +139,7 @@ public class ServerRita extends Thread {
 					try {
 						String texto = "Servidor a la espera de conexiones.";
 						log.info(texto);
-						//setTextoLog(texto);
+						setTextoLog(texto);
 						socket = serverSocket.accept(); // Aceptando las
 														// conexiones
 					} catch (InterruptedIOException e) {
@@ -153,7 +153,7 @@ public class ServerRita extends Thread {
 								+ socket.getInetAddress().getHostAddress()
 								+ " conectado.";
 						log.info(texto);
-						//setTextoLog(texto);
+						setTextoLog(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes);
@@ -230,7 +230,7 @@ public class ServerRita extends Thread {
 			serverSocket.setSoTimeout(TIMEOUT);
 			String texto = "Servidor iniciando...";
 			log.info(texto);
-			//setTextoLog(texto);
+			setTextoLog(texto);
 			
 		} catch (IOException e) {
 			log.error("No se puede crear el socket");
