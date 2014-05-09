@@ -1,8 +1,5 @@
 package rita.network;
 
-import net.sf.robocode.cachecleaner.CacheCleaner;
-import net.sf.robocode.io.FileUtil;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -14,7 +11,6 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Observable;
 
 /**
  * @author pvilaltella
@@ -47,11 +43,13 @@ public class ServerRita extends Thread {
 	private CantidadConexionesObservable cantidadConexionesObservable;
 
 	private Logger log = Logger.getLogger(ServerRita.class);
+	private String textoLog;
 
 	private ServerSocket serverSocket;
 	private boolean start = false;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
+	private LogRitaObservable logRitaObservable;
 
 	public boolean isStart() {
 		return start;
@@ -76,6 +74,7 @@ public class ServerRita extends Thread {
 		portNumber = DEFAULT_PORT_NUMBER;
 		cantidadConexionesObservable = new CantidadConexionesObservable();
 		mensajes = new Mensajes();
+		setLogRitaObsevable(new LogRitaObservable());
 	}
 
 	/**
@@ -92,6 +91,7 @@ public class ServerRita extends Thread {
 		portNumber = defaultPortNumber;
 		cantidadConexionesObservable = cantidad;
 		mensajes = new Mensajes();
+		setLogRitaObsevable(new LogRitaObservable());
 
 	}
 
@@ -137,7 +137,9 @@ public class ServerRita extends Thread {
 				while (true && (activeConnectionCount < MAX_CONNECTIONS)
 						&& !iniciarBatalla) {
 					try {
-						log.info("Servidor a la espera de conexiones.");
+						String texto = "Servidor a la espera de conexiones.";
+						log.info(texto);
+						//setTextoLog(texto);
 						socket = serverSocket.accept(); // Aceptando las
 														// conexiones
 					} catch (InterruptedIOException e) {
@@ -147,9 +149,11 @@ public class ServerRita extends Thread {
 					if (!iniciarBatalla) {
 						// SUMO SOLO LOS CONECTADOS
 						setActiveConnectionCount(activeConnectionCount + 1);
-						log.info("Cliente con la IP "
+						String texto = "Cliente con la IP "
 								+ socket.getInetAddress().getHostAddress()
-								+ " conectado.");
+								+ " conectado.";
+						log.info(texto);
+						//setTextoLog(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes);
@@ -224,7 +228,10 @@ public class ServerRita extends Thread {
 			// Creo el ServerSocket
 			serverSocket = new ServerSocket(portNumber, MAX_CONNECTIONS);
 			serverSocket.setSoTimeout(TIMEOUT);
-			log.info("Servidor iniciando...");
+			String texto = "Servidor iniciando...";
+			log.info(texto);
+			//setTextoLog(texto);
+			
 		} catch (IOException e) {
 			log.error("No se puede crear el socket");
 			e.printStackTrace();
@@ -272,6 +279,24 @@ public class ServerRita extends Thread {
 
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+
+	public LogRitaObservable getLogRita() {
+		return logRitaObservable;
+	}
+
+	public void setLogRitaObsevable(LogRitaObservable logRita) {
+		this.logRitaObservable = logRita;
+	}
+
+	public String getTextoLog() {
+		return textoLog;
+	}
+
+	public void setTextoLog(String textoLog) {
+		//cantidadConexionesObservable.changeData(activeConnectionCount);
+		this.textoLog = textoLog;
+		logRitaObservable.changeData(textoLog);
 	}
 
 }
