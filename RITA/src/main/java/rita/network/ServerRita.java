@@ -302,6 +302,8 @@ public class ServerRita extends Thread {
 		//cantidadConexionesObservable.changeData(activeConnectionCount);
 		this.textoLog = textoLog;
 		logRitaObservable.changeData(textoLog);
+	}
+	
 	public void addRobotNames(String nombreArchivo) {
 		// TODO Auto-generated method stub
 		this.robotsEnBatalla.add(nombreArchivo);
