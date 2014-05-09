@@ -344,8 +344,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new DialogClientRita(paneJavaCode,"Cliente",false);
-				//new DialogClientRita();
+				new DialogClientRita(paneJavaCode,"Cliente",false);				
 			}
 		});
 		
