@@ -25,10 +25,13 @@ public class ClienteRita extends Thread {
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
 
-	public ClienteRita(String ipServer, int portServer, String robotCliente) {		
+	public ClienteRita(String ipServer, int portServer, String robotCliente) throws UnknownHostException, IOException {		
 		ip = ipServer;
 		port = portServer;
 		robot = robotCliente;
+		socket = new Socket(ip, port);
+		conexionServidor = new ConexionServidor(socket, null, robot);
+		setMiDireccion(socket.getLocalAddress().getHostAddress());
 	}
 
 	public static void main(String[] args) {
@@ -36,22 +39,10 @@ public class ClienteRita extends Thread {
 
 	}
 	
-	public void run(){
-		log.info("Cliente Dame conexion");							
-		try {
-			socket = new Socket(ip, port);
-			conexionServidor = new ConexionServidor(socket, null, robot);
-			setMiDireccion(socket.getLocalAddress().getHostAddress());
-			if(!socket.getLocalAddress().getHostName().equals("localhost"))
-				this.ejecutarRobocode = true;
-		} catch (UnknownHostException ex) {
-			log.error("No se ha podido conectar con el servidor ("
-					+ ex.getMessage() + ").");							
-		} catch (IOException ex) {
-			log.error("No se ha podido conectar con el servidor ("
-					+ ex.getMessage() + ").");
-		}
-		
+	public void run() {
+		log.info("Cliente Dame conexion");	
+		if(!socket.getLocalAddress().getHostName().equals("localhost"))
+			this.ejecutarRobocode = true;			
 		recibirMensajesServidor();
 		closeClient();
 		
