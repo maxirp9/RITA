@@ -10,6 +10,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -21,6 +23,8 @@ import javax.swing.border.BevelBorder;
 
 import controller.WorkspaceController;
 import renderable.RenderableBlock;
+import rita.network.LogRitaObservable;
+import rita.network.ServerRita;
 import rita.settings.Language;
 import rita.ui.component.DialogNewRobot;
 import rita.ui.sourcecodepane.ReadOnlySourceCodePane;
@@ -31,7 +35,7 @@ import workspace.WorkspaceEvent;
 import workspace.WorkspaceListener;
 import workspace.WorkspaceWidget;
 
-public class DialogLogRita extends JPanel implements MouseListener, ComponentListener,WorkspaceWidget, WorkspaceListener{
+public class DialogLogRita extends JPanel implements MouseListener, ComponentListener,WorkspaceWidget, WorkspaceListener, Observer {
 
 	/**
 	 * 
@@ -58,8 +62,10 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	private static int X_LOCATION = 1075;
 	private static int Y_LOCATION = 600;
 	
+	private ServerRita serverRita;
+	
 	static {
-		MAX_WIDTH = 900;
+		MAX_WIDTH = 800;
 		MAX_HEIGHT = 200 + BUTTON_HEIGHT;
 		/* ajustar ancho y alto con valores de acuerdo a si el tamano de la
 		*  pantalla es comun o si es la de una netbook */
@@ -78,6 +84,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	private JButton codeButton;
 	private Font smallButtonFont;
 	private LineNumbersTextPane paneJavaCode;
+	private LogRitaObservable logRitaObservable;
 	
 	private static final class SINGLETON {
 		private static final DialogLogRita INSTANCE = new DialogLogRita();
@@ -88,6 +95,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	}
 	
 	private DialogLogRita() {
+		
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		this.setLocation(X_LOCATION,Y_LOCATION);
 		this.setSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
@@ -102,12 +110,16 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 		add(codeButton);
 		add(paneJavaCode.getWrappingContainerWithLines());
 		Workspace.getInstance().addComponentListener(this);
+		logRitaObservable = new LogRitaObservable();
+		logRitaObservable.addObserver(this);
+		setServerRita(ServerRita.getInstance(0, null));
+		getServerRita().setLogRitaObsevable(logRitaObservable);
 
 	}
 	
 	private void createHideCodeButton() {
 
-		this.codeButton = new JButton(createImageIcon("/images/sourcecode/source_code_small.png"));
+		this.codeButton = new JButton(createImageIcon("/images/sourcecode/log_icon.png"));
 		codeButton.addActionListener(new SourceCodeEnlargerTimer());
 		codeButton.addMouseListener(this);
 		codeButton.setBounds(0, 0, BUTTON_WIDHT, BUTTON_HEIGHT);
@@ -133,7 +145,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 		paneJavaCode.setFont(paneJavaCode.getFont().deriveFont(12.0f));
 		
 		// definir la colorizacion de la sintaxis de Java, coincidiendo con los colores de los bloques de RITA
-        paneJavaCode.setText("Hola");
+        paneJavaCode.setText("Log del server...");
 		paneJavaCode.setBackground(Color.WHITE);
         
         paneJavaCode.getWrappingContainerWithLines().setBounds(0, BUTTON_HEIGHT, MAX_WIDTH, MAX_HEIGHT-BUTTON_HEIGHT);
@@ -359,6 +371,21 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	public Iterable<RenderableBlock> getBlocks() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void update(Observable obs, Object data) {
+		// TODO Auto-generated method stub
+		String textoEscrito = paneJavaCode.getText() + "\n " + data.toString();
+		paneJavaCode.setText(textoEscrito);
+	}
+
+	public ServerRita getServerRita() {
+		return serverRita;
+	}
+
+	public void setServerRita(ServerRita serverRita) {
+		this.serverRita = serverRita;
 	}
 
 
