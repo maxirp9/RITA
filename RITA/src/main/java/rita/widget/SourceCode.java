@@ -681,7 +681,7 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 	 * This animator is responsible for enlarging or shrinking the size of the
 	 * MiniMap when expand() or shrink() is called, respectively.
 	 */
-	private class SourceCodeEnlargerTimer implements ActionListener {
+	public class SourceCodeEnlargerTimer implements ActionListener {
 		/** Growth count */
 		private int count;
 		/** Internal Timer used to animate the opening/closing of source view */

@@ -67,6 +67,7 @@ import rita.ui.component.DialogSelectRobot;
 import rita.ui.component.DialogSettings2;
 import rita.ui.component.RMenu;
 import rita.util.RitaUtilities;
+import rita.widget.DialogLogRita;
 import rita.widget.SourceCode;
 import rita.widget.Splash;
 import workspace.Page;
@@ -116,6 +117,9 @@ public class WorkspaceController {
 	// componente comprendido por el panel que contiene el c�digo Java
 	// generado
 	public static SourceCode sourceCode = null;
+	
+	// componente del log del Server
+	public static DialogLogRita logRita = null;
 
 	/**
 	 * Constructs a WorkspaceController instance that manages the interaction
@@ -552,11 +556,17 @@ public class WorkspaceController {
 		TrashCan trash = new TrashCan(tc.getImage(), openedtc.getImage());
 		workspace.addWidget(trash, true, true);
 
+		/** Agrego el log PABLO */
+		logRita = DialogLogRita.getInstance();
+		workspace.addWorkspaceListener(logRita);
+		workspace.addWidget(logRita, true, true);
+
 		workspacePanel = new JPanel();
 		workspacePanel.setLayout(new BorderLayout());
 		workspacePanel.add(workspace, BorderLayout.CENTER);
 
 		isWorkspacePanelInitialized = true;
+		
 
 	}
 
