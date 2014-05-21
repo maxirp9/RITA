@@ -251,9 +251,14 @@ public class DialogServerRita extends JDialog implements Observer {
 			    //Añadir cada elemento del ArrayList en el modelo de la lista
 			    listModel.add(i, arrayList.get(i));
 			}
+			
+			if(arrayList.size() == 0)
+				listModel.add(0, "No hay conectados...");
+			
 			//Asociar el modelo de lista al JList
 			lst.setModel(listModel);
-
+			
+					
 			lst.validate();
 			lst.repaint();
 			
