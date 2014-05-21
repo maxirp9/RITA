@@ -51,7 +51,6 @@ public class DialogServerRita extends JDialog implements Observer {
 	private static final long serialVersionUID = -6132731169207934920L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textPort;
-	private CantidadConexionesObservable cantidadConexionesObservable;
 	private ClientesConectadosObservable clientesConectadosObservable;
 	private ServerRita server;
 	private JButton okButton;
@@ -59,13 +58,14 @@ public class DialogServerRita extends JDialog implements Observer {
 	private JLabel lblServerOn;
 	private JLabel lblServerOff;
 
-	public DialogServerRita(java.awt.Frame parent, String titulo, boolean modal) {
+	public DialogServerRita(java.awt.Frame parent, String title, boolean modal) {
 		super(parent);
-		initialize();
+		initialize(title);
 	}
 
-	private void initialize() {
+	private void initialize(String title) {
 		try {
+			this.setTitle(title);
 			clientesConectadosObservable = new ClientesConectadosObservable();
 			clientesConectadosObservable.addObserver(this);
 			/*
@@ -135,6 +135,7 @@ public class DialogServerRita extends JDialog implements Observer {
 		}
 
 		JButton btnEjecutarBatalla = new JButton("Ejecutar Batalla");
+		btnEjecutarBatalla.setEnabled(false);
 		btnEjecutarBatalla.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				server.setIniciarBatalla(true);
@@ -243,6 +244,7 @@ public class DialogServerRita extends JDialog implements Observer {
 			lbl.repaint();
 		}
 		if (obs instanceof ClientesConectadosObservable) {
+			//ACTUALIZO EL LISTADO DE CLIENTES
 			JList lst = (JList) contentPanel.getComponent(7);
 			ArrayList<String> arrayList = (ArrayList<String>) data;
 			//Crear un objeto DefaultListModel
@@ -258,10 +260,16 @@ public class DialogServerRita extends JDialog implements Observer {
 			lst.validate();
 			lst.repaint();
 			
+			//ACTUALIZO EL CONTADOR DE USUARIOS
 			JLabel lbl = (JLabel) contentPanel.getComponent(5);
 			lbl.setText(String.valueOf(arrayList.size()));
 			lbl.validate();
 			lbl.repaint();
+			
+			//HABILITO EL BOTON DE EJECUTAR BATALLA
+			JButton btnEjec = (JButton) contentPanel.getComponent(6);
+			btnEjec.setEnabled((arrayList.size()>0));				
+			
 		}
 
 	}
