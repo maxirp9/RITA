@@ -158,13 +158,14 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	}
 	
 	private void prepareCodeRegion() {
-		//paneJavaCode = new ReadOnlySourceCodePane();
+		
 		paneJavaCode = new JTextPane();
 		paneJavaCode.setFont(paneJavaCode.getFont().deriveFont(12.0f));
 		
-		// definir la colorizacion de la sintaxis de Java, coincidiendo con los colores de los bloques de RITA
         paneJavaCode.setText("Log del server...");
 		paneJavaCode.setBackground(Color.WHITE);
+		Font font = new Font("Arial", com.lowagie.text.Font.BOLD, 11);
+		paneJavaCode.setFont(font);
 		paneJavaCode.setEditable(false);
         
         //paneJavaCode.getWrappingContainerWithLines().setBounds(0, BUTTON_HEIGHT, MAX_WIDTH, MAX_HEIGHT-BUTTON_HEIGHT);
