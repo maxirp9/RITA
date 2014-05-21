@@ -181,12 +181,13 @@ public class DialogServerRita extends JDialog implements Observer {
 					lblServerOn.setVisible(false);
 					buttonPane.add(lblServerOn);
 					
-					lblServerOff = new JLabel(new ImageIcon(DialogServerRita.class.getResource("images/icons/serverOff.png")));
+					lblServerOff = new JLabel(new ImageIcon(DialogServerRita.class.getResource("/images/icons/serverOff.png")));
 					lblServerOff.setVisible(true);
 					buttonPane.add(lblServerOff);
 					
 					btnPararServidor = new JButton("Parar");
 					btnPararServidor.setVerticalAlignment(SwingConstants.TOP);
+					btnPararServidor.setEnabled(false);
 					btnPararServidor.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							//SETEO LOS BOTONES E IMAGEN DE ESTADO DEL SERVIDOR
