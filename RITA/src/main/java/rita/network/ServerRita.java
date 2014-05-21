@@ -218,7 +218,6 @@ public class ServerRita extends Thread {
 	}
 
 	private void reiniciarVariables() {
-		// TODO Auto-generated method stub
 
 		mensajes.setGeneroBin(false);
 		setActiveConnectionCount(0);
@@ -261,12 +260,14 @@ public class ServerRita extends Thread {
 	}
 
 	private void executeBattle() {
+		String texto = "En proceso de ejecución de la batalla";
+		getLogServer().setTexto(texto);
 		BatallaBin.compilarRobots(mensajes);
 		log.info("Compila los archivo .java");
 		BatallaBin.crearArchivoBatalla(mensajes);
 		log.info("Se creo el archivo .battle de configuracion");
 		BatallaBin.generarArchivoBinario();
-		String texto = "Ejecuta la batalla y crea el bin";
+		texto = "Ejecuta la batalla y crea el bin";
 		log.info(texto);
 		mensajes.setGeneroBin(true);
 	}
@@ -275,6 +276,9 @@ public class ServerRita extends Thread {
 	 * Parar el servidor
 	 */
 	public void stopServer() {
+		String texto = "Servidor detenido.";
+		log.info(texto);		
+		getLogServer().setTexto(texto);
 		setShutDownFlag(true);
 		instance = null;
 	}
@@ -296,7 +300,7 @@ public class ServerRita extends Thread {
 	}
 	
 	public void addRobotNames(String nombreArchivo) {
-		// TODO Auto-generated method stub
+
 		this.robotsEnBatalla.add(nombreArchivo);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
 	}
