@@ -3,6 +3,7 @@ package rita.ui.component;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -19,15 +20,12 @@ import rita.network.EjecutarComando;
 import rita.network.Mensaje;
 import rita.settings.HelperEditor;
 import rita.settings.Settings;
-import rita.ui.sourcecodepane.ReadOnlySourceCodePane;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
 
 public class DialogClientRita extends JDialog {
 	/**
@@ -48,18 +46,14 @@ public class DialogClientRita extends JDialog {
 		initialize();
 	}
 	
-	public DialogClientRita(ReadOnlySourceCodePane parent, String titulo, boolean modal) {
-		super();
-		initialize();
-	}
-	
 	private void initialize() {
 		
 		try {
 			PropertyConfigurator.configure("log4j.properties");
-			DialogClientRita dialog = new DialogClientRita();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			this.setVisible(true);
+			setModal(true);
+			crearDialog();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,7 +62,7 @@ public class DialogClientRita extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 			PropertyConfigurator.configure("log4j.properties");
 			DialogClientRita dialog = new DialogClientRita();
@@ -78,14 +72,15 @@ public class DialogClientRita extends JDialog {
 			e.printStackTrace();
 		}
 	}
-
+*/
 	/**
 	 * Create the dialog.
 	 */
-	public DialogClientRita() {
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+	public void crearDialog() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Conexion con servidor");
 		setBounds(100, 100, 378, 197);
+		setLocation(700, 100);
 		getContentPane().setLayout(new BorderLayout());
 		{
 			JPanel panel = new JPanel();
@@ -138,7 +133,7 @@ public class DialogClientRita extends JDialog {
 						try {
 							clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+
 							e.printStackTrace();
 							JOptionPane.showMessageDialog(null, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
 								    JOptionPane.ERROR_MESSAGE);
@@ -151,7 +146,17 @@ public class DialogClientRita extends JDialog {
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
+				//JButton cancelButton = new JButton("Cerrar");
+				JButton cancelButton = new JButton(new AbstractAction("Cerrar") {
+
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+		            	closeClient();
+		                DialogClientRita.this.setVisible(false);
+		                DialogClientRita.this.dispatchEvent(new WindowEvent(
+		                		DialogClientRita.this, WindowEvent.WINDOW_CLOSING));
+		            }
+		        });
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
@@ -230,12 +235,13 @@ public class DialogClientRita extends JDialog {
 
 	private void closeClient() {
 		try {
-			log.info("Cierro el cliente "
+			if (socket != null && socket.isConnected()){
+				log.info("Cierro el cliente "
 					+ socket.getLocalAddress().getHostAddress());
-			socket.close();
+				socket.close();
+			}
 			this.dispose();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

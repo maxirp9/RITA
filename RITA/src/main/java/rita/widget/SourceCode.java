@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,6 +69,7 @@ import rita.ui.component.DialogNewRobot;
 import rita.ui.component.DialogSelectEnemies;
 import rita.ui.component.MessageDialog;
 import rita.ui.component.MessageDialog.MessageType;
+import rita.ui.component.RMenu;
 import rita.ui.component.exception.NoEnemiesException;
 import rita.ui.sourcecodepane.ReadOnlySourceCodePane;
 import rita.widget.ScreenHelper.ScreenSize;
@@ -344,7 +346,8 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new DialogClientRita(paneJavaCode,"Cliente",false);				
+				Frame frame = (Frame) SourceCode.getInstance().getParent().getParent().getParent().getParent().getParent().getParent();
+				new DialogClientRita(frame,"Cliente",false);
 			}
 		});
 		

@@ -8,19 +8,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 
 import rita.network.CantidadConexionesObservable;
 import rita.network.ClientesConectadosObservable;
-import rita.network.ConexionServidor;
 import rita.network.ServerRita;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
