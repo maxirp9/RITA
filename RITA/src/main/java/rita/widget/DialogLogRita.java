@@ -1,5 +1,4 @@
 package rita.widget;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,17 +17,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 
-import controller.WorkspaceController;
 import renderable.RenderableBlock;
 import rita.network.LogRitaObservable;
+import rita.network.LogServer;
 import rita.network.ServerRita;
 import rita.settings.Language;
 import rita.ui.component.DialogNewRobot;
-import rita.ui.sourcecodepane.ReadOnlySourceCodePane;
-import rita.ui.sourcecodepane.impl.LineNumbersTextPane;
 import rita.widget.ScreenHelper.ScreenSize;
 import workspace.Workspace;
 import workspace.WorkspaceEvent;
@@ -63,6 +61,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	private static int Y_LOCATION = 600;
 	
 	private ServerRita serverRita;
+	private LogServer logServer;
 	
 	static {
 		MAX_WIDTH = 800;
@@ -82,8 +81,9 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	private boolean minimized = true;
 	private boolean expanded = false;
 	private JButton codeButton;
+	private JButton cleanTextButton;
 	private Font smallButtonFont;
-	private LineNumbersTextPane paneJavaCode;
+	private JTextPane paneJavaCode;
 	private LogRitaObservable logRitaObservable;
 	
 	private static final class SINGLETON {
@@ -107,20 +107,23 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 		this.enlarger = new SourceCodeEnlargerTimer();
 		createHideCodeButton();
 		prepareCodeRegion();
+		createCleanTextButton();
 		add(codeButton);
-		add(paneJavaCode.getWrappingContainerWithLines());
-		Workspace.getInstance().addComponentListener(this);
+		add(cleanTextButton);
+		add(paneJavaCode);
 		logRitaObservable = new LogRitaObservable();
 		logRitaObservable.addObserver(this);
-		setServerRita(ServerRita.getInstance(0, null));
-		getServerRita().setLogRitaObsevable(logRitaObservable);
-
+		
+		setLogServer(new LogServer());
+		getLogServer().setLogRitaObservable(logRitaObservable);
+		Workspace.getInstance().addComponentListener(this);
 	}
 	
 	private void createHideCodeButton() {
 
 		this.codeButton = new JButton(createImageIcon("/images/sourcecode/log_icon.png"));
 		codeButton.addActionListener(new SourceCodeEnlargerTimer());
+		codeButton.setActionCommand("CodeButton");
 		codeButton.addMouseListener(this);
 		codeButton.setBounds(0, 0, BUTTON_WIDHT, BUTTON_HEIGHT);
 		codeButton.setFont(smallButtonFont);
@@ -140,22 +143,37 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 		}
 	}
 	
+	private void createCleanTextButton(){
+		this.cleanTextButton = new JButton(createImageIcon("/images/sourcecode/clear_icon.png"));
+		cleanTextButton.setBounds(BUTTON_WIDHT, 0, BUTTON_WIDHT, BUTTON_HEIGHT);
+		cleanTextButton.setFont(smallButtonFont);
+		cleanTextButton.setAlignmentX(LEFT_ALIGNMENT);
+		cleanTextButton.setText("Limpiar log");
+		cleanTextButton.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
+		cleanTextButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				getLogServer().setTexto("");
+			}
+		});
+	}
+	
 	private void prepareCodeRegion() {
-		paneJavaCode = new ReadOnlySourceCodePane();
+		//paneJavaCode = new ReadOnlySourceCodePane();
+		paneJavaCode = new JTextPane();
 		paneJavaCode.setFont(paneJavaCode.getFont().deriveFont(12.0f));
 		
 		// definir la colorizacion de la sintaxis de Java, coincidiendo con los colores de los bloques de RITA
         paneJavaCode.setText("Log del server...");
 		paneJavaCode.setBackground(Color.WHITE);
+		paneJavaCode.setEditable(false);
         
-        paneJavaCode.getWrappingContainerWithLines().setBounds(0, BUTTON_HEIGHT, MAX_WIDTH, MAX_HEIGHT-BUTTON_HEIGHT);
-
+        //paneJavaCode.getWrappingContainerWithLines().setBounds(0, BUTTON_HEIGHT, MAX_WIDTH, MAX_HEIGHT-BUTTON_HEIGHT);
+		paneJavaCode.setBounds(0, BUTTON_HEIGHT, MAX_WIDTH, MAX_HEIGHT-BUTTON_HEIGHT);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (minimized) {
-			WorkspaceController.refreshCodeRegion(null);
+		if (minimized) {			
 			codeButton.setText("Ocultar log");
 			expanded = true;
 			enlarger.expand();
@@ -202,6 +220,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 		 * smallest as possible and at 15, the map is largest as possible
 		 */
 		public void actionPerformed(ActionEvent e) {
+			
 			if (count <= 0) {
 				timer.stop();
 			} else if(count >= NUM_STEPS) {
@@ -224,7 +243,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 				// - (MAPHEIGHT / 5);
 				repositionSourceCode(count);
 				repaint();
-			}
+			}			
 		}
 
 		/**
@@ -317,7 +336,6 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	@Override
 	public void workspaceEventOccurred(WorkspaceEvent event) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -376,16 +394,33 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	@Override
 	public void update(Observable obs, Object data) {
 		// TODO Auto-generated method stub
-		String textoEscrito = paneJavaCode.getText() + "\n " + data.toString();
-		paneJavaCode.setText(textoEscrito);
+		if (data instanceof String){
+			String dato = (String) data;
+			
+			String textoEscrito = paneJavaCode.getText() + "\n " + dato;
+			// Si el String dato pasado por parametro es texto vacio significa que hay que limpiar el texto
+			if (dato.equals("")){
+				textoEscrito = "";
+			}
+			paneJavaCode.setText(textoEscrito);
+			
+		}
 	}
-
+	
 	public ServerRita getServerRita() {
 		return serverRita;
 	}
 
 	public void setServerRita(ServerRita serverRita) {
 		this.serverRita = serverRita;
+	}
+
+	public LogServer getLogServer() {
+		return logServer;
+	}
+
+	public void setLogServer(LogServer logServer) {
+		this.logServer = logServer;
 	}
 
 

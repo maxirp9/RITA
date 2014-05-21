@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import rita.battle.BatallaBin;
 import rita.settings.Settings;
+import rita.widget.DialogLogRita;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Observable;
 
 /**
  * @author pvilaltella
@@ -45,7 +45,7 @@ public class ServerRita extends Thread {
 	private ClientesConectadosObservable clientesConectadosObservable;
 
 	private Logger log = Logger.getLogger(ServerRita.class);
-	private String textoLog;
+	private LogServer logServer;
 
 	private ServerSocket serverSocket;
 	private boolean start = false;
@@ -53,7 +53,6 @@ public class ServerRita extends Thread {
 	private ArrayList<String> robotsEnBatalla;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
-	private LogRitaObservable logRitaObservable;
 
 	public boolean isStart() {
 		return start;
@@ -77,7 +76,7 @@ public class ServerRita extends Thread {
 		// this(DEFAULT_PORT_NUMBER, cantidad);
 		portNumber = DEFAULT_PORT_NUMBER;
 		mensajes = new Mensajes();
-		setLogRitaObsevable(new LogRitaObservable());
+		setLogServer(DialogLogRita.getInstance().getLogServer());
 	}
 
 	/**
@@ -94,8 +93,7 @@ public class ServerRita extends Thread {
 		clientesConectadosObservable = clientes;
 		mensajes = new Mensajes();
 		robotsEnBatalla = new ArrayList<String>();
-		setLogRitaObsevable(new LogRitaObservable());
-
+		setLogServer(DialogLogRita.getInstance().getLogServer());
 	}
 
 	public int getPortNumber() {
@@ -140,8 +138,8 @@ public class ServerRita extends Thread {
 						&& !iniciarBatalla) {
 					try {
 						String texto = "Servidor a la espera de conexiones.";
-						log.info(texto);
-						setTextoLog(texto);
+						log.info(texto);						
+						getLogServer().setTexto(texto);
 						socket = serverSocket.accept(); // Aceptando las
 														// conexiones
 					} catch (InterruptedIOException e) {
@@ -155,7 +153,7 @@ public class ServerRita extends Thread {
 								+ socket.getInetAddress().getHostAddress()
 								+ " conectado.";
 						log.info(texto);
-						setTextoLog(texto);
+						getLogServer().setTexto(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes, clientesConectadosObservable, this);
@@ -212,7 +210,9 @@ public class ServerRita extends Thread {
 		
 		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
 		log.error(cmd);
-		log.info("Se ejecuta Robocode en el Servidor");
+		String texto = "Se ejecuta Robocode en el Servidor";
+		log.info(texto);
+		getLogServer().setTexto(texto);
 		EjecutarComando comando = new EjecutarComando(cmd);		
 		
 	}
@@ -234,16 +234,18 @@ public class ServerRita extends Thread {
 	}
 
 	private void createServerSocket() {
+		String texto;
 		try {
 			// Creo el ServerSocket
 			serverSocket = new ServerSocket(portNumber, MAX_CONNECTIONS);
 			serverSocket.setSoTimeout(TIMEOUT);
-			String texto = "Servidor iniciando...";
+			texto = "Servidor iniciando...";
 			log.info(texto);
-			setTextoLog(texto);
+			getLogServer().setTexto(texto);
 			
 		} catch (IOException e) {
-			log.error("No se puede crear el socket");
+			texto = "No se puede crear el socket";
+			log.error(texto);
 			e.printStackTrace();
 			return;
 		} // Try
@@ -264,7 +266,8 @@ public class ServerRita extends Thread {
 		BatallaBin.crearArchivoBatalla(mensajes);
 		log.info("Se creo el archivo .battle de configuracion");
 		BatallaBin.generarArchivoBinario();
-		log.info("Ejecuta la batalla y crea el bin");
+		String texto = "Ejecuta la batalla y crea el bin";
+		log.info(texto);
 		mensajes.setGeneroBin(true);
 	}
 
@@ -291,29 +294,19 @@ public class ServerRita extends Thread {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-
-	public LogRitaObservable getLogRita() {
-		return logRitaObservable;
-	}
-
-	public void setLogRitaObsevable(LogRitaObservable logRita) {
-		this.logRitaObservable = logRita;
-	}
-
-	public String getTextoLog() {
-		return textoLog;
-	}
-
-	public void setTextoLog(String textoLog) {
-		//cantidadConexionesObservable.changeData(activeConnectionCount);
-		this.textoLog = textoLog;
-		logRitaObservable.changeData(textoLog);
-	}
 	
 	public void addRobotNames(String nombreArchivo) {
 		// TODO Auto-generated method stub
 		this.robotsEnBatalla.add(nombreArchivo);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
+	}
+
+	public LogServer getLogServer() {
+		return logServer;
+	}
+
+	public void setLogServer(LogServer logServer) {
+		this.logServer = logServer;
 	}
 
 }
