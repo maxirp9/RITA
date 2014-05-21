@@ -15,7 +15,7 @@ public class LogRitaObservable extends Observable{
 	}
 
 	/**
-	 * Setea el arreglo de log y Notifica a los observadores del cambio
+	 * Setea el texto del log y Notifica a los observadores del cambio
 	 * @param textoLog
 	 */
 	public void changeData(String textoLog) {
