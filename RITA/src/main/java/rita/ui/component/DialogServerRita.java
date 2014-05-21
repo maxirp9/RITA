@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -36,6 +37,12 @@ import javax.swing.JList;
 import javax.swing.AbstractListModel;
 import javax.swing.border.BevelBorder;
 
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+
+import java.awt.Component;
+
+import javax.swing.SwingConstants;
+
 public class DialogServerRita extends JDialog implements Observer {
 
 	/**
@@ -47,6 +54,10 @@ public class DialogServerRita extends JDialog implements Observer {
 	private CantidadConexionesObservable cantidadConexionesObservable;
 	private ClientesConectadosObservable clientesConectadosObservable;
 	private ServerRita server;
+	private JButton okButton;
+	private JButton btnPararServidor;
+	private JLabel lblServerOn;
+	private JLabel lblServerOff;
 
 	public DialogServerRita(java.awt.Frame parent, String titulo, boolean modal) {
 		super(parent);
@@ -55,8 +66,6 @@ public class DialogServerRita extends JDialog implements Observer {
 
 	private void initialize() {
 		try {
-			cantidadConexionesObservable = new CantidadConexionesObservable();
-			cantidadConexionesObservable.addObserver(this);
 			clientesConectadosObservable = new ClientesConectadosObservable();
 			clientesConectadosObservable.addObserver(this);
 			/*
@@ -166,32 +175,58 @@ public class DialogServerRita extends JDialog implements Observer {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Iniciar");
-				server = ServerRita.getInstance(Integer.valueOf(textPort.getText()),						
-						clientesConectadosObservable);// new
-														// ServerRita(1234,cantidadConexionesObservable);
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						server.start();
-					}
-				});
-				okButton.setActionCommand("Correr servidor");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton btnPararServidor = new JButton("Parar");
-				btnPararServidor.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						server.stopServer();
-					}
-				});
-				buttonPane.add(btnPararServidor);
-			}
-			{
-				JButton cancelButton = new JButton("Cerrar");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
+				{
+					
+					lblServerOn = new JLabel(new ImageIcon(DialogServerRita.class.getResource("/images/icons/serverOn.png")));
+					lblServerOn.setVisible(false);
+					buttonPane.add(lblServerOn);
+					
+					lblServerOff = new JLabel(new ImageIcon(DialogServerRita.class.getResource("images/icons/serverOff.png")));
+					lblServerOff.setVisible(true);
+					buttonPane.add(lblServerOff);
+					
+					btnPararServidor = new JButton("Parar");
+					btnPararServidor.setVerticalAlignment(SwingConstants.TOP);
+					btnPararServidor.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							//SETEO LOS BOTONES E IMAGEN DE ESTADO DEL SERVIDOR
+							lblServerOn.setVisible(false);
+							lblServerOff.setVisible(true);
+							okButton.setEnabled(true);
+							btnPararServidor.setEnabled(false);
+							server.stopServer();
+							try {
+								Socket socket = new Socket(traerIp(), server
+										.getPortNumber());
+							} catch (UnknownHostException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							System.out.println("STOP Servidor");
+						}
+					});
+					okButton = new JButton("Iniciar");
+					okButton.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							server = ServerRita.getInstance(Integer.valueOf(textPort.getText()),						
+									clientesConectadosObservable);
+							server.start();
+							//SETEO LOS BOTONES E IMAGEN DE ESTADO DEL SERVIDOR
+							lblServerOn.setVisible(true);
+							lblServerOff.setVisible(false);
+							okButton.setEnabled(false);
+							btnPararServidor.setEnabled(true);
+						}
+					});
+					buttonPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{okButton, btnPararServidor}));
+					okButton.setActionCommand("Correr servidor");
+					buttonPane.add(okButton);
+					getRootPane().setDefaultButton(okButton);
+					buttonPane.add(btnPararServidor);
+					
+					
+				}
 			}
 		}
 	}

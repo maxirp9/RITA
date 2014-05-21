@@ -557,9 +557,9 @@ public class WorkspaceController {
 		workspace.addWidget(trash, true, true);
 
 		/** Agrego el log PABLO */
-		logRita = DialogLogRita.getInstance();
-		workspace.addWorkspaceListener(logRita);
-		workspace.addWidget(logRita, true, true);
+//		logRita = DialogLogRita.getInstance();
+//		workspace.addWorkspaceListener(logRita);
+//		workspace.addWidget(logRita, true, true);
 
 		workspacePanel = new JPanel();
 		workspacePanel.setLayout(new BorderLayout());

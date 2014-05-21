@@ -136,7 +136,7 @@ public class ServerRita extends Thread {
 			// Esperando las conexiones nuevas
 			try {
 
-				while (true && (activeConnectionCount < MAX_CONNECTIONS)
+				while (!shutDownFlag && true && (activeConnectionCount < MAX_CONNECTIONS)
 						&& !iniciarBatalla) {
 					try {
 						String texto = "Servidor a la espera de conexiones.";
@@ -148,7 +148,7 @@ public class ServerRita extends Thread {
 						log.error("Error: " + e.getMessage());
 					} // try
 
-					if (!iniciarBatalla) {
+					if (!shutDownFlag && !iniciarBatalla) {
 						// SUMO SOLO LOS CONECTADOS
 						//setActiveConnectionCount(activeConnectionCount + 1);
 						String texto = "Cliente con la IP "
@@ -163,7 +163,7 @@ public class ServerRita extends Thread {
 					}
 
 				} // end del While
-				while (mensajes.getCantidadRobots() < activeConnectionCount) {
+				while (!shutDownFlag && mensajes.getCantidadRobots() < activeConnectionCount) {
 					// A la espera de todos los robots
 					try {
 						Thread.currentThread();
@@ -175,10 +175,11 @@ public class ServerRita extends Thread {
 						e.printStackTrace();
 					}
 				}
-				executeBattle();
+				if(!shutDownFlag)
+					executeBattle();
 				// Espero que los workers envien los archivos para reiniciar el
 				// servidor
-				while (mensajes.getCantidadConexiones() < activeConnectionCount) {
+				while (!shutDownFlag && mensajes.getCantidadConexiones() < activeConnectionCount) {
 					try {
 						log.info("El Server esperando a los hilos..."
 								+ mensajes.getCantidadConexiones() + " de "
@@ -189,10 +190,12 @@ public class ServerRita extends Thread {
 					}
 				}
 				// Ejecuto Robocode en el Servidor
-				this.ejecutarRobocode();
+				if(!shutDownFlag)
+					this.ejecutarRobocode();
 				// Pongo en false para queden esperando nuevamente los hilos
 				closeServerSocket();
-				createServerSocket();
+				if(!shutDownFlag)
+					createServerSocket();
 				reiniciarVariables();
 				// NO debería cerrar las conexiones hasta que no se envien todos
 				// los mensajes
@@ -200,7 +203,9 @@ public class ServerRita extends Thread {
 				log.error("Error de input");
 			}
 		}// Cierre while del cierre del servidor
-
+		
+		if(shutDownFlag)
+			log.info("Stop Servidor");
 	}
 	
 	public void ejecutarRobocode() {		
@@ -268,6 +273,7 @@ public class ServerRita extends Thread {
 	 */
 	public void stopServer() {
 		setShutDownFlag(true);
+		instance = null;
 	}
 
 	public boolean isIniciarBatalla() {
