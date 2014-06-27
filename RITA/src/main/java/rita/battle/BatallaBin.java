@@ -166,5 +166,55 @@ public class BatallaBin {
 		} catch (IOException e) {
 		};
 	}
+	
+	/**
+	 * Borrar los archivos temporales de los robots
+	 * @param mensajes
+	 */
+	public static void borrarArchivosRobots(Mensajes mensajes){
+		borrarArchivosRobotsJava();
+		borrarArchivosRobotsDeClase(mensajes);
+	}
+	
+	/**
+	 * Borrar los archivos java temporales
+	 */
+	private static void borrarArchivosRobotsJava(){
+		
+		String dir = Settings.getRobotsnetPath();
+		File f;
+
+		File directorio = new File(dir);
+		String[] robots = directorio.list();
+		
+		for (int i = 0; i < robots.length; i++) {
+			f = new File(dir + File.separator + robots[i]);
+			f.delete();
+
+		}
+		
+	}
+	
+	/**
+	 * Borrar los archivos de clase de los robots
+	 * @param mensajes
+	 */
+	private static void borrarArchivosRobotsDeClase(Mensajes mensajes){
+		
+		String dir = Settings.getRobotsPath();
+		
+		File archivoClass;
+		ArrayList<String> robots = mensajes.getRobotsEnBatalla();
+		
+		for (String robot : robots) {
+			
+			String archivo = dir + File.separator + Settings.getProperty("defaultpackage") + File.separator + robot + ".";
+			archivoClass = new File(archivo + "class");
+			archivoClass.delete();
+			archivoClass = new File(archivo + "java");
+			archivoClass.delete();
+		}
+		
+	}
 
 }

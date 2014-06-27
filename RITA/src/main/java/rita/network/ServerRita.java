@@ -273,6 +273,7 @@ public class ServerRita extends Thread {
 		texto = "Ejecuta la batalla y crea el bin";
 		log.info(texto);
 		mensajes.setGeneroBin(true);
+		BatallaBin.borrarArchivosRobots(mensajes);
 	}
 
 	/**
