@@ -140,10 +140,9 @@ public class ServerWorkerRita extends Thread implements Observer {
 					+ socket.getInetAddress().getHostAddress());
 			// Se cierra fichero
 			fos.close();
-			String cmd = "mv " + archivo + " " + Settings.getRobotsnetPath() + File.separator + nombreArchivo + ".java";
+			String archivoDestino = nombreArchivo + ".java"; 
+			String cmd = Settings.getSO().renombrarArchivo(archivo, archivoDestino);
 			log.info("Comando: " + cmd);
-			EjecutarComando comando = new EjecutarComando(cmd);
-			
 			log.info("Comando ejecutado ...");
 
 		} catch (Exception e) {

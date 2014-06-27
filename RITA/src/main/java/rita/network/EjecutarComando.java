@@ -21,11 +21,23 @@ public class EjecutarComando {
                 //comando = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp /home/pvilaltella/workspaceJava/robocode-1.8.3.0-setup/libs/robocode.jar robocode.Robocode -replay /tmp/batalla.copia.bin -tps 25";
             	comando = cmd;
             } else {
-                comando = "cmd /c ipconfig";
+                //comando = "cmd /c " +"dir"; //+ cmd;
+                cmd = "cmd /c " + cmd ;
             }
+/*
+            ProcessBuilder pb=new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true);
+            Process process=pb.start();
+            BufferedReader inStreamReader = new BufferedReader(
+                new InputStreamReader(process.getInputStream())); 
 
+            while(inStreamReader.readLine() != null){
+                //do something with commandline output.
+            	System.out.println(inStreamReader.readLine());
+            }*/
+            
             // Ejcutamos el comando
-            Process p = Runtime.getRuntime().exec(comando);
+            Process p = Runtime.getRuntime().exec(cmd);
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 

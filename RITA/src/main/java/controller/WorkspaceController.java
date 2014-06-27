@@ -932,6 +932,7 @@ public class WorkspaceController {
 		// creating and showing this application's GUI.
 		new Splash();
 		Settings.setInstallPath(args[0]);
+		Settings.setSO(System.getProperty("os.name"));
 		setLookAndFeelThenRun();
 	}
 

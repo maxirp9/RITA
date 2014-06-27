@@ -52,7 +52,7 @@ public class ServerRita extends Thread {
 	
 	private ArrayList<String> robotsEnBatalla;
 	
-	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
+	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
 
 	public boolean isStart() {
 		return start;
@@ -206,14 +206,17 @@ public class ServerRita extends Thread {
 			log.info("Stop Servidor");
 	}
 	
-	public void ejecutarRobocode() {		
+	/**
+	 * Ejecuta robocode
+	 */
+	public void ejecutarRobocode() { 
 		
 		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
-		log.error(cmd);
+		Settings.getSO().ejecutarComando(cmd);
+		log.info(cmd);
 		String texto = "Se ejecuta Robocode en el Servidor";
 		log.info(texto);
 		getLogServer().setTexto(texto);
-		EjecutarComando comando = new EjecutarComando(cmd);		
 		
 	}
 

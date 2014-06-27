@@ -26,6 +26,10 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 
+import rita.network.Linux;
+import rita.network.SistemaOperativo;
+import rita.network.Windows;
+
 /**
  * Esta clase administra las variables que son almacenadas en el sistema, como
  * el nivel en el que va a trabajar el usuario y cualquier otro parametro de
@@ -47,6 +51,8 @@ public class Settings {
 	// private static final String LANGUAGE = "JAVA";
 	private static final Properties props = new Properties();
 	private static final Set<String> userPropNames = new HashSet<String>();
+	
+	private static SistemaOperativo SO;
 
 	private Settings() {
 	}
@@ -175,11 +181,11 @@ public class Settings {
 	}
 	
 	private static void setBinaryPath(String string){
-		binaryPath = installPath + "binary"; 
+		binaryPath = installPath  + File.separator + "binary"; 
 	}
 
 	private static void setRobotsnetPath(String string){
-		robotsnetPath = installPath + "robotsnet"; 
+		robotsnetPath = installPath  + File.separator + "robotsnet"; 
 	}
 	
 	/**
@@ -272,6 +278,17 @@ public class Settings {
 		}
 		return path;
 		
+	}
+
+	public static SistemaOperativo getSO() {
+		return SO;
+	}
+
+	public static void setSO(String so) {
+		if(so.toLowerCase().contains("windows"))
+			SO = new Windows();
+		else
+			SO = new Linux();
 	}
 		
 }

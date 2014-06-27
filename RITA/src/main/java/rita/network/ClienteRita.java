@@ -23,7 +23,7 @@ public class ClienteRita extends Thread {
 	private String robot;
 	private boolean ejecutarRobocode = false;
 	
-	static String directorioRobocodeLibs = Settings.getInstallPath() + "lib";
+	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
 
 	public ClienteRita(String ipServer, int portServer, String robotCliente) throws UnknownHostException, IOException {		
 		ip = ipServer;
@@ -41,7 +41,8 @@ public class ClienteRita extends Thread {
 	
 	public void run() {
 		log.info("Cliente Dame conexion");	
-		if(!socket.getLocalAddress().getHostName().equals("localhost"))
+		System.out.println(socket.getLocalAddress().getHostName());
+		if(!socket.getLocalAddress().getHostName().contains("localhost") && !socket.getLocalAddress().getHostName().contains("127.0.0.1"))
 			this.ejecutarRobocode = true;			
 		recibirMensajesServidor();
 		closeClient();
@@ -124,14 +125,15 @@ public class ClienteRita extends Thread {
 		return pedidoRobot;
 	}
 
-	public void ejecutarRobocode() {		
-		
+	/**
+	 * Ejecuta el robocode
+	 */
+	public void ejecutarRobocode() { 
 		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
-		
-		log.error(cmd);
+		Settings.getSO().ejecutarComando(cmd);
+		log.info(cmd);
 		log.info("Se ejecuta Robocode en el cliente "
 				+ socket.getLocalAddress().getHostAddress());
-		EjecutarComando comando = new EjecutarComando(cmd);		
 		
 	}
 

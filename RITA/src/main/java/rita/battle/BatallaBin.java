@@ -20,8 +20,8 @@ import robocode.Robocode;
 
 public class BatallaBin {
 	
-	static String directorioRobocodeLibs = Settings.getInstallPath()  + "lib";
-	static String directorioRobocodeBatallas = Settings.getInstallPath() + "battles";
+	static String directorioRobocodeLibs = Settings.getInstallPath()  + File.separator  + "lib";
+	static String directorioRobocodeBatallas = Settings.getInstallPath() + File.separator + "battles";
 	
 	/**
 	 * Creacion del archivo de configuracion de la batalla con los robots
@@ -134,53 +134,19 @@ public class BatallaBin {
 				e.printStackTrace();
 			}
 			
-			String cmd = "cp " + Settings.getRobotsnetPath() + File.separator + nombre + ".java " + Settings.getRobotsPath() + File.separator + Settings.getProperty("defaultpackage");
+			String archivoOrigen = Settings.getRobotsnetPath() + File.separator + nombre + ".java"; 
+			String archivoDestino = Settings.getRobotsPath() + File.separator + Settings.getProperty("defaultpackage");
+			String cmd = Settings.getSO().copiarArchivo(archivoOrigen, archivoDestino);
 			System.out.println("Comando: " + cmd);
-			EjecutarComando comando = new EjecutarComando(cmd);
 
 		}
 	}
 
 	public static void generarArchivoBinario() {
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp /home/pvilaltella/workspaceJava/git/RITA/RITA/robots:" + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
-		//String[] arg = new String[1];
-		
-		// SourceCode.getInstance();
-		// arg[0] = "-battle " + directorioRobocodeBatallas + File.separator + "batalla.battle";
-		//arg[0] = "-replay"; 
-		// arg[2] = "-record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
-		//HiddenAccess.robocodeMain(arg);
-		//Robocode.main(arg);
-		System.out.println(cmd);
-		//String[] cmd = SourceCode.getUnixCommandBin();
-		
-		/*Process proc;
-		InputStreamReader isr = null;
-		BufferedReader br = null;
-		try {
-			proc = Runtime.getRuntime().exec(cmd);
-			isr = new InputStreamReader(proc.getErrorStream());
-			br = new BufferedReader(isr);
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				System.out.println("ERROR" + ">" + line);
-			}
-			// any errors???
-			int exitVal = proc.waitFor();
-			System.out.println("ExitValue: " + exitVal);
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		} finally {
-			if(br!=null) {
-				try { br.close(); } catch(IOException ignored) { }
-			} else if(isr!=null) {
-				try { isr.close(); } catch(IOException ignored) { }				
-			}
-		}*/
-		
-		EjecutarComando comando = new EjecutarComando(cmd);				
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
+		Settings.getSO().ejecutarComando(cmd);
+		System.out.println("Comando: " + cmd);		
+						
 	}
 	
 	public static void borrarArchivoBatalla(){
