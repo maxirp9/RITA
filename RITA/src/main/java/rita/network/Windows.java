@@ -5,7 +5,7 @@ public class Windows extends SistemaOperativo {
 	private String prefijo = "cmd /c ";
 
 	@Override
-	public String renombrarArchivo(String archivoOrigen, String archivoDestino) {
+	public String renombrarArchivo(String archivoOrigen, String archivoDestino, String path) {
 
 		String cmd = "ren " + archivoOrigen + " " + archivoDestino;
 		this.ejecutarComando(prefijo + cmd);

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public abstract class SistemaOperativo {
 	
-	public abstract String renombrarArchivo(String archivoOrigen, String archivoDestino);
+	public abstract String renombrarArchivo(String archivoOrigen, String archivoDestino, String path);
 	public abstract String copiarArchivo(String archivoOrigen, String archivoDestino);
 	
 	public void ejecutarComando(String cmd){

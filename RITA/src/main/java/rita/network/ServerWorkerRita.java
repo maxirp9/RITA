@@ -100,7 +100,8 @@ public class ServerWorkerRita extends Thread implements Observer {
 			// FileOutputStream fos = new FileOutputStream(mensaje.nombreFichero
 			// + "_copia");
 			String path = directorioTempRobots + File.separator;
-			String archivo = path + "copia-" + this.getId() + ".java";
+			String nombreArch = "copia-" + this.getId() + ".java";
+			String archivo = path + nombreArch;
 			FileOutputStream fos = new FileOutputStream(archivo);
 			String nombreArchivo = "";
 
@@ -141,7 +142,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 			// Se cierra fichero
 			fos.close();
 			String archivoDestino = nombreArchivo + ".java"; 
-			String cmd = Settings.getSO().renombrarArchivo(archivo, archivoDestino);
+			String cmd = Settings.getSO().renombrarArchivo(nombreArch, archivoDestino, path);
 			log.info("Comando: " + cmd);
 			log.info("Comando ejecutado ...");
 

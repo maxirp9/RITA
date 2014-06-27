@@ -3,9 +3,9 @@ package rita.network;
 public class Linux extends SistemaOperativo {
 
 	@Override
-	public String renombrarArchivo(String archivoOrigen, String archivoDestino) {
+	public String renombrarArchivo(String archivoOrigen, String archivoDestino, String path) {
 
-		String cmd = "mv " + archivoOrigen + " " + archivoDestino;
+		String cmd = "mv " + path + archivoOrigen + " " + path + archivoDestino;
 		this.ejecutarComando(cmd);
 		return cmd;
 	}
