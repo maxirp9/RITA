@@ -46,6 +46,7 @@ public class Settings {
 	private static String robotsPath;
 	private static String binaryPath;
 	private static String robotsnetPath;
+	private static String battlePath;
 	private static String mvnResourcesPath=File.separator+"src"+File.separator+"main"+File.separator+"resources";
 	private static final String RITA_CONFIG_FILE = "//support"+File.separator+"rita.properties";
 	// private static final String LANGUAGE = "JAVA";
@@ -157,6 +158,7 @@ public class Settings {
 		setRobotsPath(newInstallPath);
 		setBinaryPath(newInstallPath);
 		setRobotsnetPath(newInstallPath);
+		setBattlePath(newInstallPath);
 		loadProperties();
 	}
 
@@ -186,6 +188,14 @@ public class Settings {
 
 	private static void setRobotsnetPath(String string){
 		robotsnetPath = installPath  + File.separator + "robotsnet"; 
+	}
+	
+	public static String getBattlePath() {
+		return battlePath;
+	}
+
+	public static void setBattlePath(String battlePath) {
+		Settings.battlePath = installPath  + File.separator + "battles";
 	}
 	
 	/**
@@ -290,5 +300,6 @@ public class Settings {
 		else
 			SO = new Linux();
 	}
+
 		
 }

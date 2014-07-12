@@ -1,5 +1,6 @@
 package rita.network;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -8,6 +9,7 @@ import rita.settings.Settings;
 import rita.widget.DialogLogRita;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
@@ -128,6 +130,7 @@ public class ServerRita extends Thread {
 		Socket socket = null;
 		createServerSocket();
 		setIp(serverSocket.getInetAddress().toString());
+		createFolders();
 
 		// While para mantener el servidor activo hasta el envio del apagado
 		while (!shutDownFlag) {
@@ -206,6 +209,29 @@ public class ServerRita extends Thread {
 			log.info("Stop Servidor");
 	}
 	
+	private void createFolders() {
+
+		ArrayList<String> arrayDir = new ArrayList<String>();
+		arrayDir.add(Settings.getBattlePath());
+		arrayDir.add(Settings.getBinaryPath());
+		arrayDir.add(Settings.getRobotsnetPath());
+		
+		// si el directorio de configuracion del usuario no existe => crearlo
+		for (String dir : arrayDir) {
+			
+			File ritaDir = new File("",dir);
+			
+			if(!ritaDir.exists()) {
+				try {
+					FileUtils.forceMkdir(ritaDir);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
 	/**
 	 * Ejecuta robocode
 	 */
