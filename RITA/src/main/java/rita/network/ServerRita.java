@@ -9,7 +9,6 @@ import rita.settings.Settings;
 import rita.widget.DialogLogRita;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
@@ -212,14 +211,14 @@ public class ServerRita extends Thread {
 	private void createFolders() {
 
 		ArrayList<String> arrayDir = new ArrayList<String>();
-		arrayDir.add(Settings.getBattlePath());
-		arrayDir.add(Settings.getBinaryPath());
-		arrayDir.add(Settings.getRobotsnetPath());
+		arrayDir.add("battles");
+		arrayDir.add("binary");
+		arrayDir.add("robotsnet");
 		
 		// si el directorio de configuracion del usuario no existe => crearlo
 		for (String dir : arrayDir) {
 			
-			File ritaDir = new File("",dir);
+			File ritaDir = new File(Settings.getInstallPath(),dir);
 			
 			if(!ritaDir.exists()) {
 				try {
