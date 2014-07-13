@@ -55,6 +55,7 @@ import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import renderable.RenderableBlock;
@@ -313,6 +314,16 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 				+ HelperEditor.currentRobotPackage.replace(".",
 						File.separator);
 
+		File ritaDir = new File(Settings.getRobotsPath(),HelperEditor.currentRobotPackage.replace(".",File.separator));
+		
+		if(!ritaDir.exists()) {
+			try {
+				FileUtils.forceMkdir(ritaDir);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		String fileSource = HelperEditor.currentRobotName + ".java";
 		File javaSourceFile = new File(fullPath , fileSource);
 		writeSourceFile(javaSourceFile,this.getText());
