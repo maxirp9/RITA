@@ -357,8 +357,12 @@ public class SourceCode extends JPanel implements MouseListener, WorkspaceWidget
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Frame frame = (Frame) SourceCode.getInstance().getParent().getParent().getParent().getParent().getParent().getParent();
-				new DialogClientRita(frame,"Cliente",false);
+				if(!RMenu.isDialogClientOpen()){
+					Frame frame = (Frame) SourceCode.getInstance().getParent().getParent().getParent().getParent().getParent().getParent();
+					new DialogClientRita(frame,"Cliente",false);
+					RMenu.setDialogClientOpen(true);
+				}
+				
 			}
 		});
 		

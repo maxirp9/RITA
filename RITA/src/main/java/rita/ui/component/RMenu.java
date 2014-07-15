@@ -30,10 +30,11 @@ import javax.swing.JOptionPane;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import rita.network.Linux;
+import rita.network.Windows;
 import rita.settings.HelperEditor;
 import rita.settings.Language;
 import rita.util.RitaUtilities;
-
 import workspace.Workspace;
 import controller.WorkspaceController;
 
@@ -83,6 +84,26 @@ public class RMenu {
 			.get("undo"), KeyEvent.VK_D);
 //	private static final JMenuItem menuRedo = new JMenuItem(Language
 //			.get("redo"), KeyEvent.VK_R);
+	
+	//VARIABLES PARA CONTROLAR QUE ABRAN SOLO UNA VENTANA DE CADA UNA
+	private static boolean dialogClientOpen = false;
+	private static boolean dialogServerOpen = false;
+	
+	public static void setDialogClientOpen(boolean b) {
+		dialogClientOpen = b;
+	}
+	
+	public static boolean isDialogClientOpen() {
+		return dialogClientOpen;
+	}
+	
+	public static void setDialogServerOpen(boolean b) {
+		dialogServerOpen = b;
+	}
+	
+	public static boolean isDialogServerOpen() {
+		return dialogServerOpen;
+	}
 
 	public RMenu(final JFrame parentWindow, final WorkspaceController wc) {
 		menuBar.add(menuRobots);
@@ -183,8 +204,11 @@ public class RMenu {
 		menuNetClient.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				new DialogClientRita(parentWindow,"Cliente",false);
+			public void actionPerformed(ActionEvent e) {				
+				if(!isDialogClientOpen()){
+					new DialogClientRita(parentWindow,"Cliente",false);
+					setDialogClientOpen(true);
+				}
 				
 			}
 		});
@@ -193,8 +217,10 @@ public class RMenu {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new DialogServerRita(parentWindow,"Servidor",false);
-				
+				if(!isDialogServerOpen()){
+					new DialogServerRita(parentWindow,"Servidor",false);
+					setDialogServerOpen(true);
+				}
 			}
 		});
 

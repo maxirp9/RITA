@@ -57,14 +57,14 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	private static int MAX_WIDTH;
 	private static int MAX_HEIGHT;
 	
-	private static int X_LOCATION = 1075;
+	private static int X_LOCATION = 200;
 	private static int Y_LOCATION = 600;
 	
 	private ServerRita serverRita;
 	private LogServer logServer;
 	
 	static {
-		MAX_WIDTH = 800;
+		MAX_WIDTH = 600;
 		MAX_HEIGHT = 200 + BUTTON_HEIGHT;
 		/* ajustar ancho y alto con valores de acuerdo a si el tamano de la
 		*  pantalla es comun o si es la de una netbook */
@@ -276,7 +276,7 @@ public class DialogLogRita extends JPanel implements MouseListener, ComponentLis
 	
 	public void repositionSourceCode(int count) {
 		if (this.getParent() != null) {
-			this.setBounds(this.getParent().getWidth() - CURRENT_WIDTH - OFFSET_FROM_RIGHT,
+			this.setBounds(this.getParent().getWidth() - 1400 + CURRENT_WIDTH + OFFSET_FROM_RIGHT,
 						this.getParent().getHeight() - CURRENT_HEIGHT - OFFSET_FROM_BOTTOM,
 						CURRENT_WIDTH, CURRENT_HEIGHT);
 		}

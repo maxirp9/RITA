@@ -20,6 +20,7 @@ import rita.network.EjecutarComando;
 import rita.network.Mensaje;
 import rita.settings.HelperEditor;
 import rita.settings.Settings;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
@@ -39,7 +40,12 @@ public class DialogClientRita extends JDialog {
 	private Socket socket;
 	private String miDireccion;
 	private Logger log = Logger.getLogger(DialogClientRita.class);
-	private ClienteRita clienteRita;	
+	private ClienteRita clienteRita;
+	
+	public void dispose(){
+		RMenu.setDialogClientOpen(false);
+		super.dispose();
+	}
 
 	public DialogClientRita(java.awt.Frame parent, String titulo, boolean modal) {
 		super(parent);

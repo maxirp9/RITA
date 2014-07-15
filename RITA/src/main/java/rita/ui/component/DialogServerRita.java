@@ -7,12 +7,16 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import rita.network.CantidadConexionesObservable;
 import rita.network.ClientesConectadosObservable;
 import rita.network.ServerRita;
+import rita.widget.DialogLogRita;
+import workspace.Workspace;
+import workspace.WorkspaceWidget;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -36,6 +40,8 @@ import javax.swing.border.BevelBorder;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
+import controller.WorkspaceController;
+
 import java.awt.Component;
 
 import javax.swing.SwingConstants;
@@ -54,9 +60,26 @@ public class DialogServerRita extends JDialog implements Observer {
 	private JButton btnPararServidor;
 	private JLabel lblServerOn;
 	private JLabel lblServerOff;
+	private Workspace ws;
+	private DialogLogRita logRita;
+	
+	public void dispose(){
+		logRita.getLogServer().setTexto("");
+		ws.removeWidget(logRita);
+		RMenu.setDialogServerOpen(false);
+		super.dispose();
+	}
 
 	public DialogServerRita(java.awt.Frame parent, String title, boolean modal) {
 		super(parent);
+		this.ws = Workspace.getInstance();
+		
+		/** Agrego el log PABLO */
+		logRita = DialogLogRita.getInstance();
+		logRita.setVisible(true);
+		this.ws.addWorkspaceListener(logRita);
+		this.ws.addWidget(logRita, true, true);
+		
 		initialize(title);
 	}
 
@@ -65,11 +88,6 @@ public class DialogServerRita extends JDialog implements Observer {
 			this.setTitle(title);
 			clientesConectadosObservable = new ClientesConectadosObservable();
 			clientesConectadosObservable.addObserver(this);
-			/*
-			 * DialogServerRita dialog = new DialogServerRita();
-			 * dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			 * dialog.setVisible(true);
-			 */
 			this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			this.setVisible(true);
 			correr();
@@ -95,7 +113,7 @@ public class DialogServerRita extends JDialog implements Observer {
 	 */
 	public void correr() {
 
-		setBounds(100, 100, 285, 413);
+		setBounds(250, 200, 285, 413);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
