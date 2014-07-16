@@ -7,7 +7,7 @@ public class Windows extends SistemaOperativo {
 	@Override
 	public String renombrarArchivo(String archivoOrigen, String archivoDestino, String path) {
 
-		String cmd = "ren " + archivoOrigen + " " + archivoDestino;
+		String cmd = "ren " + path + archivoOrigen + " " + archivoDestino;
 		this.ejecutarComando(prefijo + cmd);
 		return cmd;
 	}
