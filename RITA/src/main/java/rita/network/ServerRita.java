@@ -342,4 +342,11 @@ public class ServerRita extends Thread {
 		this.logServer = logServer;
 	}
 
+	public void deleteRobotName(String nombreRobot) {
+		
+		this.robotsEnBatalla.remove(nombreRobot);
+		clientesConectadosObservable.changeData(robotsEnBatalla);
+		mensajes.getRobotsEnBatalla().remove(nombreRobot);
+	}
+
 }

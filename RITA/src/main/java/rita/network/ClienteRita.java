@@ -22,6 +22,7 @@ public class ClienteRita extends Thread {
 	private int port;
 	private String robot;
 	private boolean ejecutarRobocode = false;
+	private boolean ventantaAbierta = false;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
 
@@ -32,6 +33,7 @@ public class ClienteRita extends Thread {
 		socket = new Socket(ip, port);
 		conexionServidor = new ConexionServidor(socket, null, robot);
 		setMiDireccion(socket.getLocalAddress().getHostAddress());
+		ventantaAbierta = true;
 	}
 
 	public static void main(String[] args) {
@@ -67,7 +69,16 @@ public class ClienteRita extends Thread {
 			Mensaje mensajeRecibido;
 			mensajeRecibido = conexionServidor.recibirMensaje();
 			
-			if (mensajeRecibido.accion.equals("BinGenerado")) {
+			while (!mensajeRecibido.accion.equals("BinGenerado") && ventantaAbierta) {
+				log.error("El Cliente "
+						+ getMiDireccion()
+						+ " espera BinGenerado y recibe mensaje incorrecto:"
+						+ mensajeRecibido.accion);
+				
+				mensajeRecibido = conexionServidor.recibirMensaje();
+			}
+			if (ventantaAbierta){
+			//if (mensajeRecibido.accion.equals("BinGenerado")) {
 				log.info("Ya esta el BinGenerado para el cliente: "
 						+ getMiDireccion());
 
@@ -76,14 +87,15 @@ public class ClienteRita extends Thread {
 				log.info("Pide el binario el cliente: "
 						+ getMiDireccion());
 				conexionServidor.recibirArchivo("batalla.copia.bin");
-			} else
+			/*} else
 				log.error("El Cliente "
 						+ getMiDireccion()
 						+ " espera BinGenerado y recibe mensaje incorrecto:"
 						+ mensajeRecibido.accion);
-
+*/
 			if(this.ejecutarRobocode)
 				ejecutarRobocode();
+			}
 		} catch (NullPointerException ex) {
 			log.error("El socket no se creo correctamente. ");
 		}
@@ -141,7 +153,7 @@ public class ClienteRita extends Thread {
 		try {
 			log.info("Cierro el cliente "
 					+ socket.getLocalAddress().getHostAddress());
-			socket.close();			
+			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -155,6 +167,14 @@ public class ClienteRita extends Thread {
 
 	public void setMiDireccion(String miDireccion) {
 		this.miDireccion = miDireccion;
+	}
+
+	public boolean isVentantaAbierta() {
+		return ventantaAbierta;
+	}
+
+	public void setVentantaAbierta(boolean ventantaAbierta) {
+		this.ventantaAbierta = ventantaAbierta;
 	}
 
 }

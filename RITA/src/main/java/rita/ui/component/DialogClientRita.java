@@ -240,16 +240,10 @@ public class DialogClientRita extends JDialog {
 	}
 
 	private void closeClient() {
-		try {
-			if (socket != null && socket.isConnected()){
-				log.info("Cierro el cliente "
-					+ socket.getLocalAddress().getHostAddress());
-				socket.close();
-			}
-			this.dispose();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
+		clienteRita.setVentantaAbierta(false);
+		this.dispose();
+	
 	}
 	
 	public String getMiDireccion() {

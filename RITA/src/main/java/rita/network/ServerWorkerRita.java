@@ -23,6 +23,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 	private Mensajes mensajes;
 	private ClientesConectadosObservable clientes;
 	private ServerRita server;
+	private String nombreRobot;
 
 	static String directorioTempRobots = Settings.getRobotsnetPath();
 
@@ -43,6 +44,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 	@Override
 	public void run() {
 
+		boolean errorConexion = false;
 		// Se apunta a la lista de observadores de mensajes
 		mensajes.addObserver(this);
 
@@ -50,35 +52,53 @@ public class ServerWorkerRita extends Thread implements Observer {
 		this.iniciarConexionEntrada();
 		this.pedirRobot();
 
-		while (!mensajes.getGeneroBin()) {
+		while (!mensajes.getGeneroBin() && !errorConexion) {
 			// Esperando que se genere el bin
 			try {
 				log.info("El Cliente "
 						+ socket.getInetAddress().getHostAddress()
 						+ " esperando el bin ...");
 				Thread.sleep(4000);
+
+				Mensaje mensajeAEnviar = new Mensaje("VerificoConexion", socket.getInetAddress().getHostAddress());
+				try {
+					salidaDatos.writeObject(mensajeAEnviar);
+				} catch (IOException e) {
+					e.printStackTrace();
+					errorConexion = true;					
+				}
+				
+				
 			} catch (InterruptedException e) {
 
 				e.printStackTrace();
 			}
 		} // WHILE
 
-		// Podria ponerse en el update
-		this.binGenerado();
-		if (this.hayPedidoBinario()){
-			this.enviarArchivoBinario();
+		if (!errorConexion){
+			if (!this.socket.isConnected()){
+				log.error(this.nombreRobot + ": SOCKET DESCONECTADO");
+			}
+			// Podria ponerse en el update
+			this.binGenerado();
+			if (this.hayPedidoBinario()){
+				this.enviarArchivoBinario();
+			}
+			else
+				log.error("Falla del pedido binario del Cliente: "
+						+ socket.getInetAddress().getHostAddress());
+			mensajes.incrementarCantidadConexiones();
+			try {
+				entradaDatos.close();
+				salidaDatos.close();
+			} catch (IOException ex2) {
+				log.error("Error al cerrar los stream de entrada y salida :"
+						+ ex2.getMessage());
+			}
+		}else{
+			this.server.deleteRobotName(this.nombreRobot);
 		}
-		else
-			log.error("Falla del pedido binario del Cliente: "
-					+ socket.getInetAddress().getHostAddress());
-		mensajes.incrementarCantidadConexiones();
-		try {
-			entradaDatos.close();
-			salidaDatos.close();
-		} catch (IOException ex2) {
-			log.error("Error al cerrar los stream de entrada y salida :"
-					+ ex2.getMessage());
-		}
+			
 	}
 
 	private void iniciarConexionEntrada() {
@@ -137,6 +157,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 			mensajes.agregarRobot(nombreArchivo);
 			
 			server.addRobotNames(nombreArchivo);
+			nombreRobot = nombreArchivo;
 			log.info("Ya termino la trasferencia del Robot del cliente: "
 					+ socket.getInetAddress().getHostAddress());
 			// Se cierra fichero
