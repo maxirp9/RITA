@@ -21,7 +21,6 @@ public class ServerWorkerRita extends Thread implements Observer {
 	private ObjectInputStream entradaDatos;
 	private ObjectOutputStream salidaDatos;
 	private Mensajes mensajes;
-	private ClientesConectadosObservable clientes;
 	private ServerRita server;
 	private String nombreRobot;
 
@@ -30,7 +29,6 @@ public class ServerWorkerRita extends Thread implements Observer {
 	public ServerWorkerRita(Socket socketEntrada, Mensajes mensajeEntrada, ClientesConectadosObservable clientesEntrada, ServerRita serverInstance) {
 		socket = socketEntrada;
 		mensajes = mensajeEntrada;
-		clientes = clientesEntrada;
 		server = serverInstance;
 
 		try {
@@ -52,14 +50,14 @@ public class ServerWorkerRita extends Thread implements Observer {
 		this.iniciarConexionEntrada();
 		this.pedirRobot();
 
-		while (!mensajes.getGeneroBin() && !errorConexion) {
+		while (!server.isShutDownFlag() && !mensajes.getGeneroBin() && !errorConexion) {
 			// Esperando que se genere el bin
 			try {
 				log.info("El Cliente "
 						+ socket.getInetAddress().getHostAddress()
 						+ " esperando el bin ...");
-				Thread.sleep(4000);
-
+				Thread.sleep(1000);
+				
 				Mensaje mensajeAEnviar = new Mensaje("VerificoConexion", socket.getInetAddress().getHostAddress());
 				try {
 					salidaDatos.writeObject(mensajeAEnviar);
@@ -68,37 +66,42 @@ public class ServerWorkerRita extends Thread implements Observer {
 					errorConexion = true;					
 				}
 				
-				
 			} catch (InterruptedException e) {
-
 				e.printStackTrace();
 			}
 		} // WHILE
-
-		if (!errorConexion){
-			if (!this.socket.isConnected()){
-				log.error(this.nombreRobot + ": SOCKET DESCONECTADO");
-			}
-			// Podria ponerse en el update
-			this.binGenerado();
-			if (this.hayPedidoBinario()){
-				this.enviarArchivoBinario();
-			}
-			else
-				log.error("Falla del pedido binario del Cliente: "
-						+ socket.getInetAddress().getHostAddress());
-			mensajes.incrementarCantidadConexiones();
-			try {
-				entradaDatos.close();
-				salidaDatos.close();
-			} catch (IOException ex2) {
-				log.error("Error al cerrar los stream de entrada y salida :"
-						+ ex2.getMessage());
+		
+		if(!server.isShutDownFlag()){
+			if (!errorConexion){
+	
+				// Podria ponerse en el update
+				this.binGenerado();
+				if (this.hayPedidoBinario()){
+					this.enviarArchivoBinario();
+				}
+				else
+					log.error("Falla del pedido binario del Cliente: "
+							+ socket.getInetAddress().getHostAddress());
+				mensajes.incrementarCantidadConexiones();
+				try {
+					entradaDatos.close();
+					salidaDatos.close();
+				} catch (IOException ex2) {
+					log.error("Error al cerrar los stream de entrada y salida :"
+							+ ex2.getMessage());
+				}
+			}else{
+				this.server.deleteRobotName(this.nombreRobot);
 			}
 		}else{
-			this.server.deleteRobotName(this.nombreRobot);
+			Mensaje mensajeAEnviar = new Mensaje("ParoServidor", socket.getInetAddress().getHostAddress());
+			try {
+				salidaDatos.writeObject(mensajeAEnviar);
+			} catch (IOException e) {
+				e.printStackTrace();
+				errorConexion = true;					
+			}
 		}
-			
 	}
 
 	private void iniciarConexionEntrada() {

@@ -22,9 +22,66 @@ public class ClienteRita extends Thread {
 	private int port;
 	private String robot;
 	private boolean ejecutarRobocode = false;
-	private boolean ventantaAbierta = false;
-	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
+	private boolean ventantaAbierta = false; // se usa para cuando cierra la ventana, la clase Cliente debe morir
+	
+	
+	public Socket getSocket() {
+		return socket;
+	}
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+
+
+	public ConexionServidor getConexionServidor() {
+		return conexionServidor;
+	}
+
+	public void setConexionServidor(ConexionServidor conexionServidor) {
+		this.conexionServidor = conexionServidor;
+	}
+
+	public Logger getLog() {
+		return log;
+	}
+
+	public void setLog(Logger log) {
+		this.log = log;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getRobot() {
+		return robot;
+	}
+
+	public void setRobot(String robot) {
+		this.robot = robot;
+	}
+
+	public boolean isEjecutarRobocode() {
+		return ejecutarRobocode;
+	}
+
+	public void setEjecutarRobocode(boolean ejecutarRobocode) {
+		this.ejecutarRobocode = ejecutarRobocode;
+	}
 
 	public ClienteRita(String ipServer, int portServer, String robotCliente) throws UnknownHostException, IOException {		
 		ip = ipServer;
@@ -35,11 +92,7 @@ public class ClienteRita extends Thread {
 		setMiDireccion(socket.getLocalAddress().getHostAddress());
 		ventantaAbierta = true;
 	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
+	
 	
 	public void run() {
 		log.info("Cliente Dame conexion");	
@@ -48,7 +101,6 @@ public class ClienteRita extends Thread {
 			this.ejecutarRobocode = true;			
 		recibirMensajesServidor();
 		closeClient();
-		
 	}
 	
 	/**
@@ -69,7 +121,7 @@ public class ClienteRita extends Thread {
 			Mensaje mensajeRecibido;
 			mensajeRecibido = conexionServidor.recibirMensaje();
 			
-			while (!mensajeRecibido.accion.equals("BinGenerado") && ventantaAbierta) {
+			while (!mensajeRecibido.accion.equals("ParoServidor") && !mensajeRecibido.accion.equals("BinGenerado") && ventantaAbierta) {
 				log.error("El Cliente "
 						+ getMiDireccion()
 						+ " espera BinGenerado y recibe mensaje incorrecto:"
@@ -77,25 +129,24 @@ public class ClienteRita extends Thread {
 				
 				mensajeRecibido = conexionServidor.recibirMensaje();
 			}
-			if (ventantaAbierta){
-			//if (mensajeRecibido.accion.equals("BinGenerado")) {
-				log.info("Ya esta el BinGenerado para el cliente: "
-						+ getMiDireccion());
-
-				Mensaje mensajeAEnviar = new Mensaje("DameBinFile", getMiDireccion());
-				conexionServidor.enviarMensaje(mensajeAEnviar);
-				log.info("Pide el binario el cliente: "
-						+ getMiDireccion());
-				conexionServidor.recibirArchivo("batalla.copia.bin");
-			/*} else
-				log.error("El Cliente "
-						+ getMiDireccion()
-						+ " espera BinGenerado y recibe mensaje incorrecto:"
-						+ mensajeRecibido.accion);
-*/
-			if(this.ejecutarRobocode)
-				ejecutarRobocode();
-			}
+			if(!mensajeRecibido.accion.equals("ParoServidor")){
+				if (ventantaAbierta){
+				//if (mensajeRecibido.accion.equals("BinGenerado")) {
+					log.info("Ya esta el BinGenerado para el cliente: "
+							+ getMiDireccion());
+	
+					Mensaje mensajeAEnviar = new Mensaje("DameBinFile", getMiDireccion());
+					conexionServidor.enviarMensaje(mensajeAEnviar);
+					log.info("Pide el binario el cliente: "
+							+ getMiDireccion());
+					conexionServidor.recibirArchivo("batalla.copia.bin");
+			
+				if(this.ejecutarRobocode)
+					ejecutarRobocode();
+				
+				}
+			}else
+				log.info("PARA EL SERVIDOR");
 		} catch (NullPointerException ex) {
 			log.error("El socket no se creo correctamente. ");
 		}
@@ -154,6 +205,7 @@ public class ClienteRita extends Thread {
 			log.info("Cierro el cliente "
 					+ socket.getLocalAddress().getHostAddress());
 			socket.close();
+			DialogClientRita.clienteRita = null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

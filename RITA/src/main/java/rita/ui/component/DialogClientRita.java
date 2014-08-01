@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import rita.network.ClienteRita;
-import rita.network.ConexionServidor;
 import rita.network.EjecutarComando;
 import rita.network.Mensaje;
 import rita.settings.HelperEditor;
@@ -26,7 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 
 public class DialogClientRita extends JDialog {
 	/**
@@ -36,14 +36,14 @@ public class DialogClientRita extends JDialog {
 	private JTextField textFieldIP;
 	private JTextField textFieldPuerto;
 	
-	private ConexionServidor conexionServidor;
-	private Socket socket;
 	private String miDireccion;
 	private Logger log = Logger.getLogger(DialogClientRita.class);
-	private ClienteRita clienteRita;
+	public static ClienteRita clienteRita;
 	
 	public void dispose(){
 		RMenu.setDialogClientOpen(false);
+		if(clienteRita != null)
+			clienteRita.setVentantaAbierta(false);
 		super.dispose();
 	}
 
@@ -136,15 +136,32 @@ public class DialogClientRita extends JDialog {
 					
 						log.info("Quieres conectarte a " + textFieldIP.getText() + " en el puerto " + textFieldPuerto.getText()
 								+ " con el nombre de usuario: " + HelperEditor.currentRobotName + ".");
-						try {
-							clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
-						} catch (Exception e) {
-
-							e.printStackTrace();
-							JOptionPane.showMessageDialog(null, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
-								    JOptionPane.ERROR_MESSAGE);
-						}
-						clienteRita.start();
+							try {
+								if(clienteRita == null)
+									clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
+								
+								try {
+									clienteRita.start();
+								} catch (IllegalThreadStateException e) {
+									JOptionPane.showMessageDialog(null, "Ya envio su robot","Error de conexion",
+											JOptionPane.ERROR_MESSAGE);
+									e.printStackTrace();
+								}
+							
+							} catch (ConnectException e) {
+	
+								e.printStackTrace();
+								JOptionPane.showMessageDialog(null, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
+									    JOptionPane.ERROR_MESSAGE);
+							} catch (NumberFormatException e) {
+								e.printStackTrace();
+							} catch (UnknownHostException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							
+							
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -157,7 +174,7 @@ public class DialogClientRita extends JDialog {
 
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
-		            	closeClient();
+		            	dispose();
 		                DialogClientRita.this.setVisible(false);
 		                DialogClientRita.this.dispatchEvent(new WindowEvent(
 		                		DialogClientRita.this, WindowEvent.WINDOW_CLOSING));
@@ -175,26 +192,26 @@ public class DialogClientRita extends JDialog {
 	public void recibirMensajesServidor() {
 		// Obtiene el flujo de entrada del socket
 		if (this.hayPedidoRobot()){
-			conexionServidor.iniciarConexionSalida();
-			conexionServidor.enviarArchivo(HelperEditor.currentRobotName);
+			DialogClientRita.clienteRita.getConexionServidor().iniciarConexionSalida();
+			DialogClientRita.clienteRita.getConexionServidor().enviarArchivo(HelperEditor.currentRobotName);
 		}
 		else
 			log.error("Falla del pedido de robot del Cliente: "
-					+ socket.getLocalAddress().getHostAddress());
+					+ DialogClientRita.clienteRita.getSocket().getLocalAddress().getHostAddress());
 
 		try {
 			Mensaje mensajeRecibido;
-			mensajeRecibido = conexionServidor.recibirMensaje();
+			mensajeRecibido = DialogClientRita.clienteRita.getConexionServidor().recibirMensaje();
 			
 			if (mensajeRecibido.accion.equals("BinGenerado")) {
 				log.info("Ya esta el BinGenerado para el cliente: "
 						+ getMiDireccion());
 
 				Mensaje mensajeAEnviar = new Mensaje("DameBinFile", getMiDireccion());
-				conexionServidor.enviarMensaje(mensajeAEnviar);
+				DialogClientRita.clienteRita.getConexionServidor().enviarMensaje(mensajeAEnviar);
 				log.info("Pide el binario el cliente: "
 						+ getMiDireccion());
-				conexionServidor.recibirArchivo("batalla.copia.bin");
+				DialogClientRita.clienteRita.getConexionServidor().recibirArchivo("batalla.copia.bin");
 			} else
 				log.error("El Cliente "
 						+ getMiDireccion()
@@ -213,7 +230,7 @@ public class DialogClientRita extends JDialog {
 		Mensaje mensajeRecibido;
 		// Pone el mensaje recibido en mensajes para que se notifique
 		// a sus observadores que hay un nuevo mensaje.
-		mensajeRecibido = conexionServidor.recibirMensaje();
+		mensajeRecibido = DialogClientRita.clienteRita.getConexionServidor().recibirMensaje();
 		if (mensajeRecibido.accion.equals("ListoHilo")) {
 			log.info("Cliente: "
 					+ getMiDireccion()
@@ -234,18 +251,11 @@ public class DialogClientRita extends JDialog {
 		
 		log.error(cmd);
 		log.info("Se ejecuta Robocode en el cliente "
-				+ socket.getLocalAddress().getHostAddress());
+				+ DialogClientRita.clienteRita.getSocket().getLocalAddress().getHostAddress());
 		EjecutarComando comando = new EjecutarComando(cmd);		
 		
 	}
 
-	private void closeClient() {
-	
-		clienteRita.setVentantaAbierta(false);
-		this.dispose();
-	
-	}
-	
 	public String getMiDireccion() {
 		return miDireccion;
 	}

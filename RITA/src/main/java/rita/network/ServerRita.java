@@ -343,7 +343,6 @@ public class ServerRita extends Thread {
 	}
 
 	public void deleteRobotName(String nombreRobot) {
-		
 		this.robotsEnBatalla.remove(nombreRobot);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
 		mensajes.getRobotsEnBatalla().remove(nombreRobot);
