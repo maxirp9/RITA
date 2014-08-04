@@ -67,6 +67,8 @@ public class DialogServerRita extends JDialog implements Observer {
 		logRita.getLogServer().setTexto("");
 		ws.removeWidget(logRita);
 		RMenu.setDialogServerOpen(false);
+		if(server != null)
+			server.stopServer();
 		super.dispose();
 	}
 
@@ -212,14 +214,8 @@ public class DialogServerRita extends JDialog implements Observer {
 							okButton.setEnabled(true);
 							btnPararServidor.setEnabled(false);
 							server.stopServer();
-							try {
-								Socket socket = new Socket(traerIp(), server
-										.getPortNumber());
-							} catch (UnknownHostException e) {
-								e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+							//SE PONE EN NULL NUEVAMENTE PARA ARRANCAR DE NUEVO
+							server = null;
 							System.out.println("STOP Servidor");
 						}
 					});

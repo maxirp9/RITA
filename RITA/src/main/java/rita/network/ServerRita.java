@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
@@ -309,6 +310,15 @@ public class ServerRita extends Thread {
 		log.info(texto);		
 		getLogServer().setTexto(texto);
 		setShutDownFlag(true);
+		//CREO UN SOCKET SIMULANDO UNA CONEXION PARA SALIR DEL WHILE DE ESPERA DE CONEXIONES
+		try {
+			Socket socket = new Socket("127.0.0.1", this.getPortNumber());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//VARIABLE SINGLETON
 		instance = null;
 	}
 
