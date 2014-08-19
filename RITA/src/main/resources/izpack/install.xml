@@ -11,7 +11,10 @@
 			<author name="Matias Brown (contribucion)" email="matibrown@gmail.com" />
 			<author name="Raul Benencia (contribucion)" email="rbenencia@linti.unlp.edu.ar" />
 			<author name="Nicolas Perera (contribucion)" email=""/>
-			<author name="Juan Pablo Tarragona (contribucion)" email=""/> 
+			<author name="Juan Pablo Tarragona (contribucion)" email=""/>
+			<author name="Pablo Vilaltella (contribucion)" email=""/> 
+			<author name="Maximiliano Rugna (contribucion)" email=""/> 
+			 
 		</authors>
 		<run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/>
 	</info>
@@ -124,22 +127,26 @@
 			<file src="dependency/commons-io-2.0.1.jar" targetdir="$INSTALL_PATH/lib" />
 
 
-			<file src="/support/lang_def.dtd" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/save_format.dtd" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/lang_def.xml" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/lang_def_junior.xml" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/lang_def_advanced.xml" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/junior_code.xml" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/advanced_code.xml" targetdir="$INSTALL_PATH/support" />
-			<file src="/support/rita.properties" targetdir="$INSTALL_PATH/support" />			
+			<file src="support/lang_def.dtd" targetdir="$INSTALL_PATH/support" />
+			<file src="support/save_format.dtd" targetdir="$INSTALL_PATH/support" />
+			<file src="support/lang_def.xml" targetdir="$INSTALL_PATH/support" />
+			<file src="support/lang_def_junior.xml" targetdir="$INSTALL_PATH/support" />
+			<file src="support/lang_def_advanced.xml" targetdir="$INSTALL_PATH/support" />
+			<file src="support/junior_code.xml" targetdir="$INSTALL_PATH/support" />
+			<file src="support/advanced_code.xml" targetdir="$INSTALL_PATH/support" />
+			<file src="support/rita.properties" targetdir="$INSTALL_PATH/support" />			
 			<!--
 				<file src="jars/robocode.jar" targetdir="$INSTALL_PATH/lib"/>
 			-->
-
+			
+			<!-- Libreria de Log4j-->
+			<file src="dependency/log4j.jar" targetdir="$INSTALL_PATH/lib" />
+			<file src="config/log4j.properties" targetdir="$INSTALL_PATH" />
 
 
 			<!-- <file src="izpack/install.bat" targetdir="$INSTALL_PATH" /> -->
 			<file src="izpack/rita.bat" targetdir="$INSTALL_PATH" />
+			<file src="izpack/rita.sh" targetdir="$INSTALL_PATH" />
 			<file src="izpack/uninstall.bat" targetdir="$INSTALL_PATH/Uninstaller" />
 			<file src="izpack/rita.ico" targetdir="$INSTALL_PATH" />
 
