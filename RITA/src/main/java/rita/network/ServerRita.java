@@ -42,6 +42,8 @@ public class ServerRita extends Thread {
 	private boolean iniciarBatalla = false;
 	// Valor de la ip donde corre el servidor
 	private String ip;
+	// Cantidad de rondas de una batalla
+	private String rondas;	
 
 	private Mensajes mensajes;
 	private ClientesConectadosObservable clientesConectadosObservable;
@@ -292,12 +294,17 @@ public class ServerRita extends Thread {
 		String texto = "En proceso de ejecución de la batalla";
 		getLogServer().setTexto(texto);
 		BatallaBin.compilarRobots(mensajes);
-		log.info("Compila los archivo .java");
-		BatallaBin.crearArchivoBatalla(mensajes);
-		log.info("Se creo el archivo .battle de configuracion");
+		texto = "Se compilan los archivo .java";
+		log.info(texto);
+		getLogServer().setTexto(texto);
+		BatallaBin.crearArchivoBatalla(mensajes,this.rondas);
+		texto = "Se crea el archivo .battle de configuracion";
+		log.info(texto);
+		getLogServer().setTexto(texto);
 		BatallaBin.generarArchivoBinario();
 		texto = "Ejecuta la batalla y crea el bin";
 		log.info(texto);
+		getLogServer().setTexto(texto);
 		mensajes.setGeneroBin(true);
 		BatallaBin.borrarArchivosRobots(mensajes);
 	}
@@ -356,6 +363,14 @@ public class ServerRita extends Thread {
 		this.robotsEnBatalla.remove(nombreRobot);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
 		mensajes.getRobotsEnBatalla().remove(nombreRobot);
+	}
+
+	public String getRondas() {
+		return rondas;
+	}
+
+	public void setRondas(String rondas) {
+		this.rondas = rondas;
 	}
 
 }

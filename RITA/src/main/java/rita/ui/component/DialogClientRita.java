@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -38,6 +39,9 @@ public class DialogClientRita extends JDialog {
 	
 	private String miDireccion;
 	private Logger log = Logger.getLogger(DialogClientRita.class);
+	private static JLabel lblOn;
+	private static JLabel lblOff;
+	private static JButton okButton;
 	public static ClienteRita clienteRita;
 	
 	public void dispose(){
@@ -49,6 +53,7 @@ public class DialogClientRita extends JDialog {
 
 	public DialogClientRita(java.awt.Frame parent, String titulo, boolean modal) {
 		super(parent);
+		setResizable(false);
 		initialize();
 	}
 	
@@ -85,7 +90,7 @@ public class DialogClientRita extends JDialog {
 	public void crearDialog() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Conexion con servidor");
-		setBounds(100, 100, 378, 197);
+		setBounds(100, 100, 247, 204);
 		setLocation(700, 100);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -94,34 +99,34 @@ public class DialogClientRita extends JDialog {
 			panel.setLayout(null);
 			{
 				JLabel lblIP = new JLabel("IP:");
-				lblIP.setBounds(41, 21, 18, 15);
+				lblIP.setBounds(12, 23, 18, 15);
 				panel.add(lblIP);
 			}
 			{
 				textFieldIP = new JTextField();
 				textFieldIP.setText("127.0.0.1");
-				textFieldIP.setBounds(112, 21, 114, 19);
+				textFieldIP.setBounds(64, 21, 114, 19);
 				panel.add(textFieldIP);
 				textFieldIP.setColumns(15);
 			}
 			{
 				JLabel lblPuerto = new JLabel("Puerto:");
-				lblPuerto.setBounds(41, 50, 70, 15);
+				lblPuerto.setBounds(12, 48, 70, 15);
 				panel.add(lblPuerto);
 			}
 			
 			textFieldPuerto = new JTextField();
 			textFieldPuerto.setText("1234");
-			textFieldPuerto.setBounds(112, 50, 114, 19);
+			textFieldPuerto.setBounds(64, 46, 114, 19);
 			panel.add(textFieldPuerto);
 			textFieldPuerto.setColumns(10);
 			
 			JLabel lblRobot = new JLabel("Robot:");
-			lblRobot.setBounds(41, 77, 70, 15);
+			lblRobot.setBounds(12, 77, 70, 15);
 			panel.add(lblRobot);
 			
 			JLabel lblRobotName = new JLabel("");
-			lblRobotName.setBounds(112, 77, 114, 15);
+			lblRobotName.setBounds(64, 77, 114, 15);
 			lblRobotName.setText(HelperEditor.currentRobotName);			
 			panel.add(lblRobotName);
 		}
@@ -130,7 +135,7 @@ public class DialogClientRita extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Conectar");
+				okButton = new JButton("Conectar");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 					
@@ -141,6 +146,9 @@ public class DialogClientRita extends JDialog {
 									clienteRita = new ClienteRita(textFieldIP.getText(), Integer.parseInt(textFieldPuerto.getText()), HelperEditor.currentRobotName);
 								
 								try {
+									lblOn.setVisible(true);
+									lblOff.setVisible(false);
+									okButton.setEnabled(false);
 									clienteRita.start();
 								} catch (IllegalThreadStateException e) {
 									JOptionPane.showMessageDialog(null, "Ya envio su robot","Error de conexion",
@@ -164,6 +172,16 @@ public class DialogClientRita extends JDialog {
 							
 					}
 				});
+				{
+					lblOn = new JLabel(new ImageIcon(DialogServerRita.class.getResource("/images/icons/serverOn.png")));
+					lblOn.setVisible(false);
+					buttonPane.add(lblOn);
+				}
+				{
+					lblOff = new JLabel(new ImageIcon(DialogServerRita.class.getResource("/images/icons/serverOff.png")));
+					lblOff.setVisible(true);
+					buttonPane.add(lblOff);
+				}
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
@@ -186,75 +204,12 @@ public class DialogClientRita extends JDialog {
 		}
 	}
 	
-	/**
-	 * Recibe los mensajes del chat reenviados por el servidor
-	 */
-	public void recibirMensajesServidor() {
-		// Obtiene el flujo de entrada del socket
-		if (this.hayPedidoRobot()){
-			DialogClientRita.clienteRita.getConexionServidor().iniciarConexionSalida();
-			DialogClientRita.clienteRita.getConexionServidor().enviarArchivo(HelperEditor.currentRobotName);
-		}
-		else
-			log.error("Falla del pedido de robot del Cliente: "
-					+ DialogClientRita.clienteRita.getSocket().getLocalAddress().getHostAddress());
-
-		try {
-			Mensaje mensajeRecibido;
-			mensajeRecibido = DialogClientRita.clienteRita.getConexionServidor().recibirMensaje();
-			
-			if (mensajeRecibido.accion.equals("BinGenerado")) {
-				log.info("Ya esta el BinGenerado para el cliente: "
-						+ getMiDireccion());
-
-				Mensaje mensajeAEnviar = new Mensaje("DameBinFile", getMiDireccion());
-				DialogClientRita.clienteRita.getConexionServidor().enviarMensaje(mensajeAEnviar);
-				log.info("Pide el binario el cliente: "
-						+ getMiDireccion());
-				DialogClientRita.clienteRita.getConexionServidor().recibirArchivo("batalla.copia.bin");
-			} else
-				log.error("El Cliente "
-						+ getMiDireccion()
-						+ " espera BinGenerado y recibe mensaje incorrecto:"
-						+ mensajeRecibido.accion);
-
-			ejecutarRobocode();
-		} catch (NullPointerException ex) {
-			log.error("El socket no se creo correctamente. ");
-		}
+	public static void resetearBotones(){
+		lblOn.setVisible(false);
+		lblOff.setVisible(true);
+		okButton.setEnabled(true);
 	}
 
-	private boolean hayPedidoRobot() {
-
-		boolean pedidoRobot = true;
-		Mensaje mensajeRecibido;
-		// Pone el mensaje recibido en mensajes para que se notifique
-		// a sus observadores que hay un nuevo mensaje.
-		mensajeRecibido = DialogClientRita.clienteRita.getConexionServidor().recibirMensaje();
-		if (mensajeRecibido.accion.equals("ListoHilo")) {
-			log.info("Cliente: "
-					+ getMiDireccion()
-					+ " acepta hilo");
-		} else {
-			log.error("El Cliente "
-					+ getMiDireccion()
-					+ " espera ListoHilo y recibe mensaje incorrecto:"
-					+ mensajeRecibido.accion);
-			pedidoRobot = false;
-		}
-		return pedidoRobot;
-	}
-
-	public void ejecutarRobocode() {		
-		
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + Settings.getBinaryPath() + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
-		
-		log.error(cmd);
-		log.info("Se ejecuta Robocode en el cliente "
-				+ DialogClientRita.clienteRita.getSocket().getLocalAddress().getHostAddress());
-		EjecutarComando comando = new EjecutarComando(cmd);		
-		
-	}
 
 	public String getMiDireccion() {
 		return miDireccion;

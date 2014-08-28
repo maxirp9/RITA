@@ -27,9 +27,11 @@ public class BatallaBin {
 	 * Creacion del archivo de configuracion de la batalla con los robots
 	 * participantes
 	 */
-	public static void crearArchivoBatalla(Mensajes mensajes) {
+	public static void crearArchivoBatalla(Mensajes mensajes, String rondas) {
 		File f;
 		f = new File(directorioRobocodeBatallas + File.separator + "batalla.battle");
+		
+		System.out.println("RONDAS: " + String.valueOf(rondas));
 
 		// Escritura
 		try {
@@ -41,7 +43,7 @@ public class BatallaBin {
 			wr.write("#Battle Properties \n");
 			wr.append("robocode.battleField.width=800\n"
 					+ "robocode.battleField.height=600\n"
-					+ "robocode.battle.numRounds=10\n"
+					+ "robocode.battle.numRounds="+ rondas +"\n"
 					+ "robocode.battle.gunCoolingRate=0.1\n"
 					+ "robocode.battle.rules.inactivityTime=450\n"
 					+ "robocode.battle.hideEnemyNames=true\n"

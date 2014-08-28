@@ -143,10 +143,13 @@ public class ClienteRita extends Thread {
 			
 				if(this.ejecutarRobocode)
 					ejecutarRobocode();
-				
+					DialogClientRita.resetearBotones();
 				}
 			}else
+			{
 				log.info("PARA EL SERVIDOR");
+				DialogClientRita.resetearBotones();
+			}
 		} catch (NullPointerException ex) {
 			log.error("El socket no se creo correctamente. ");
 		}

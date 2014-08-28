@@ -14,10 +14,12 @@
 
 package rita.ui.component;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Iterator;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
@@ -143,6 +145,12 @@ public class RMenu {
 					// mostrar ventana que pide el nombre del nuevo robot
 					@SuppressWarnings("unused")
 					DialogNewRobot rTypeDialog = new DialogNewRobot(parentWindow,wcTemp);
+				}
+				Component[] pantallas = parentWindow.getComponents();
+				Component p = pantallas[0];
+				System.out.println(p.toString());
+				for (int i = 0; i < pantallas.length; i++) {
+					System.out.println(pantallas[i].toString());
 				}
 			}
 		});
