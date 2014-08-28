@@ -41,6 +41,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 
 	@Override
 	public void run() {
+		String textoLog;
 
 		boolean errorConexion = false;
 		// Se apunta a la lista de observadores de mensajes
@@ -78,6 +79,9 @@ public class ServerWorkerRita extends Thread implements Observer {
 				this.binGenerado();
 				if (this.hayPedidoBinario()){
 					this.enviarArchivoBinario();
+					textoLog = "Envio del archivo Binario al cliente: "
+							+ socket.getInetAddress().getHostAddress();
+					this.server.getLogServer().setTexto(textoLog);
 				}
 				else
 					log.error("Falla del pedido binario del Cliente: "
