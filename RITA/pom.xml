@@ -35,7 +35,7 @@
   	<properties>
 		<jdk.version>1.6</jdk.version>
 		<staging.dir>${project.build.directory}/staging</staging.dir>
-    	<izpack-standalone.version>4.3.1</izpack-standalone.version>
+    	<izpack-standalone.version>4.3.5</izpack-standalone.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -262,6 +262,7 @@
       <scope>test</scope>
     </dependency>
      -->
+     
     <dependency>
     	<groupId>org.apache.directory.studio</groupId>
     	<artifactId>org.apache.logging.log4j</artifactId>
@@ -353,7 +354,6 @@
               <configuration>
                 <tasks>
                   <copy todir="${staging.dir}/images"> 
-                    <!-- <fileset dir="${basedir}/src/main/resources/images" /> -->
                      <fileset dir="${basedir}/src/main/resources/images" /> 
                   </copy>
 
@@ -381,9 +381,21 @@
                   </copy>
                   <copy todir="${staging.dir}/config">                  
                       <fileset dir="${basedir}/config" includes="robocode.properties" />
+                      <fileset dir="${basedir}/config" includes="log4j.properties" />
                   </copy>
                   <copy todir="${basedir}" >                  
                       <fileset dir="${basedir}/src/main/resources/izpack" includes="install.bat" />
+                  </copy>
+                  
+                  <!-- Agrego los directorios de RitaEnRed -->
+                  <copy todir="${staging.dir}/battles">                  
+                      <fileset dir="${basedir}/battles" excludes="**/*" />
+                  </copy>
+                  <copy todir="${staging.dir}/binary">                  
+                      <fileset dir="${basedir}/binary" excludes="**/*" />
+                  </copy>
+                  <copy todir="${staging.dir}/robotsnet">                  
+                      <fileset dir="${basedir}/robotsnet" excludes="**/*" />
                   </copy>
                   
                   </tasks>
@@ -433,7 +445,7 @@
             <customPanelDirectory>${staging.dir}</customPanelDirectory>
 
             <mkdirs>true</mkdirs>
-			<installerFile>RitaSetup</installerFile>
+			<installerFile>RitaSetup.jar</installerFile>
           </configuration>
           <executions>
             <execution>
