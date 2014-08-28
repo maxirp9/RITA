@@ -199,6 +199,7 @@ public class DialogServerRita extends JDialog implements Observer {
 		
 		JComboBox comboBoxRondas = new JComboBox();
 		comboBoxRondas.setModel(new DefaultComboBoxModel(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}));
+		comboBoxRondas.setSelectedIndex(2);
 		comboBoxRondas.setBounds(81, 61, 53, 24);
 		contentPanel.add(comboBoxRondas);
 		rondas = comboBoxRondas;
