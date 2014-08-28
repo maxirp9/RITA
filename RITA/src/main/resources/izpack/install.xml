@@ -172,6 +172,17 @@
 			<file src="izpack/set_classpath.sh" targetdir="$INSTALL_PATH" />
 			<file src="izpack/set_classpath.bat" targetdir="$INSTALL_PATH" />
 			
+			<!-- Directorios extra -->
+			<fileset dir="battles" targetdir="$INSTALL_PATH/battles">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="binary" targetdir="$INSTALL_PATH/binary">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="robotsnet" targetdir="$INSTALL_PATH/robotsnet">
+                <include name="**"/>
+            </fileset>
+			
 			<file src="config/robocode.properties" targetdir="$INSTALL_PATH/config" />
 			<parsable targetfile="$INSTALL_PATH/set_classpath.sh" />
 			<parsable targetfile="$INSTALL_PATH/set_classpath.bat" />
