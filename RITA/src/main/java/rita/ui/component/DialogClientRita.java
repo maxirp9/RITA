@@ -63,7 +63,7 @@ public class DialogClientRita extends JDialog {
 			PropertyConfigurator.configure("log4j.properties");
 			this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			this.setVisible(true);
-			setModal(true);
+			setModal(false);
 			crearDialog();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -151,15 +151,15 @@ public class DialogClientRita extends JDialog {
 									okButton.setEnabled(false);
 									clienteRita.start();
 								} catch (IllegalThreadStateException e) {
-									JOptionPane.showMessageDialog(null, "Ya envio su robot","Error de conexion",
+									JOptionPane.showMessageDialog(DialogClientRita.this, "Ya envio su robot","Error de conexion",
 											JOptionPane.ERROR_MESSAGE);
 									e.printStackTrace();
 								}
 							
 							} catch (ConnectException e) {
 	
-								e.printStackTrace();
-								JOptionPane.showMessageDialog(null, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
+								//e.printStackTrace();
+								JOptionPane.showMessageDialog(DialogClientRita.this, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
 									    JOptionPane.ERROR_MESSAGE);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
