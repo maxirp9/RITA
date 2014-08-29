@@ -67,7 +67,6 @@ import rita.ui.component.DialogSelectRobot;
 import rita.ui.component.DialogSettings2;
 import rita.ui.component.RMenu;
 import rita.util.RitaUtilities;
-import rita.widget.DialogLogRita;
 import rita.widget.SourceCode;
 import rita.widget.Splash;
 import workspace.Page;
@@ -117,9 +116,6 @@ public class WorkspaceController {
 	// componente comprendido por el panel que contiene el c�digo Java
 	// generado
 	public static SourceCode sourceCode = null;
-	
-	// componente del log del Server
-	public static DialogLogRita logRita = null;
 
 	/**
 	 * Constructs a WorkspaceController instance that manages the interaction
@@ -565,10 +561,33 @@ public class WorkspaceController {
 		workspacePanel = new JPanel();
 		workspacePanel.setLayout(new BorderLayout());
 		workspacePanel.add(workspace, BorderLayout.CENTER);
-
+		
+//		JTextArea paneJavaCode = new JTextArea();
+//		paneJavaCode.setFont(paneJavaCode.getFont().deriveFont(12.0f));		
+//        paneJavaCode.setText("TTTTTTTTESSSSSSSSSSSTTTTTTTTTTT");
+//		paneJavaCode.setBackground(Color.WHITE);
+//		Font font = new Font("Arial", com.lowagie.text.Font.BOLD, 11);
+//		paneJavaCode.setFont(font);
+//		paneJavaCode.setEditable(false);
+////		paneJavaCode.setLineWrap(true);
+////        paneJavaCode.setWrapStyleWord(true);
+//		paneJavaCode.setBounds(0, 40, 300, 150);
+//		
+//		JScrollPane scrollPanel = new JScrollPane(paneJavaCode, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+////		JScrollPane scrollPanel = new JScrollPane(paneJavaCode);
+//		scrollPanel.setPreferredSize(new Dimension(300, 150));
+//		
+////		scrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+////		scrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//				
+//		JPanel logPanel = new JPanel();
+////		logPanel.setLayout(mgr);
+//		logPanel.add(scrollPanel);
+//		logPanel.setVisible(true);
+//		workspacePanel.add(logPanel);
+//		workspace.add(logPanel);
 		isWorkspacePanelInitialized = true;
 		
-
 	}
 
 	/**

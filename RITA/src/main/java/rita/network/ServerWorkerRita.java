@@ -81,7 +81,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 					this.enviarArchivoBinario();
 					textoLog = "Envio del archivo Binario al cliente: "
 							+ socket.getInetAddress().getHostAddress();
-					this.server.getLogServer().setTexto(textoLog);
+					this.server.guardarLog(textoLog);
 				}
 				else
 					log.error("Falla del pedido binario del Cliente: "

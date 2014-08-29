@@ -7,16 +7,15 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import rita.network.CantidadConexionesObservable;
 import rita.network.ClientesConectadosObservable;
+import rita.network.LogRitaObservable;
+import rita.network.LogServer;
 import rita.network.ServerRita;
-import rita.widget.DialogLogRita;
 import workspace.Workspace;
-import workspace.WorkspaceWidget;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -40,13 +39,13 @@ import javax.swing.border.BevelBorder;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
-import controller.WorkspaceController;
-
 import java.awt.Component;
 
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 
 public class DialogServerRita extends JDialog implements Observer {
 
@@ -64,11 +63,14 @@ public class DialogServerRita extends JDialog implements Observer {
 	private JLabel lblServerOn;
 	private JLabel lblServerOff;
 	private Workspace ws;
-	private DialogLogRita logRita;
+//	private DialogLogRita logRita;
+	private LogServer logServer;
+	private LogRitaObservable logRitaObservable;
+	private JTextArea textAreaLog;
 	
 	public void dispose(){
-		logRita.getLogServer().setTexto("");
-		ws.removeWidget(logRita);
+//		logRita.getLogServer().setTexto("");
+//		ws.removeWidget(logRita);
 		RMenu.setDialogServerOpen(false);
 		if(server != null)
 			server.stopServer();
@@ -81,10 +83,11 @@ public class DialogServerRita extends JDialog implements Observer {
 		this.ws = Workspace.getInstance();
 		
 		/** Agrego el log PABLO */
-		logRita = DialogLogRita.getInstance();
-		logRita.setVisible(true);
-		this.ws.addWorkspaceListener(logRita);
-		this.ws.addWidget(logRita, true, true);
+//		logRita = DialogLogRita.getInstance();
+//		logRita.setVisible(true);
+//				
+//		this.ws.addWorkspaceListener(logRita);
+//		this.ws.addWidget(logRita, true, true);
 		
 		initialize(title);
 	}
@@ -95,6 +98,10 @@ public class DialogServerRita extends JDialog implements Observer {
 			clientesConectadosObservable = new ClientesConectadosObservable();
 			clientesConectadosObservable.addObserver(this);
 			this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			logRitaObservable = new LogRitaObservable();
+			logRitaObservable.addObserver(this);
+//			setLogServer(new LogServer());
+//			getLogServer().setLogRitaObservable(logRitaObservable);
 			this.setVisible(true);
 			correr();
 		} catch (Exception e) {
@@ -119,7 +126,7 @@ public class DialogServerRita extends JDialog implements Observer {
 	 */
 	public void correr() {
 
-		setBounds(250, 200, 212, 413);
+		setBounds(250, 200, 416, 413);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -203,9 +210,34 @@ public class DialogServerRita extends JDialog implements Observer {
 		comboBoxRondas.setBounds(81, 61, 53, 24);
 		contentPanel.add(comboBoxRondas);
 		rondas = comboBoxRondas;
+		
+		JLabel lblTextAreaLog = new JLabel("Registro de Eventos:");
+		lblTextAreaLog.setBounds(217, 12, 193, 15);
+		contentPanel.add(lblTextAreaLog);
+		
+		
+		textAreaLog = new JTextArea();
+		textAreaLog.setEditable(false);
+		textAreaLog.setBounds(200, 37, 200, 260);
+		contentPanel.add(textAreaLog);
+
+		JScrollPane scrollPaneLog = new JScrollPane(textAreaLog, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPaneLog.setBounds(200, 37, 200, 260);
+		contentPanel.add(scrollPaneLog);
+		
+		JButton btnLimpiarRegistro = new JButton("Limpiar Registro");
+		btnLimpiarRegistro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textAreaLog.setText("");
+			}
+		});
+		btnLimpiarRegistro.setBounds(236, 312, 164, 25);
+		contentPanel.add(btnLimpiarRegistro);
+		
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.LEFT));
+			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				{
@@ -214,7 +246,7 @@ public class DialogServerRita extends JDialog implements Observer {
 					okButton.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							server = ServerRita.getInstance(Integer.valueOf(textPort.getText()),						
-									clientesConectadosObservable);
+									clientesConectadosObservable, logRitaObservable);
 							server.setRondas(rondas.getSelectedItem().toString());
 							server.start();
 							//SETEO LOS BOTONES E IMAGEN DE ESTADO DEL SERVIDOR
@@ -304,6 +336,15 @@ public class DialogServerRita extends JDialog implements Observer {
 			btnEjec.setEnabled((arrayList.size()>0));				
 			
 		}
+		if (obs instanceof LogRitaObservable) {
+			
+			String textoEscrito = textAreaLog.getText() + "\n " + data.toString();
+			// Si el String dato pasado por parametro es texto vacio significa que hay que limpiar el texto
+			textAreaLog.setText(textoEscrito);
+			textAreaLog.validate();
+			textAreaLog.repaint();
+		}
+		
 
 	}
 
@@ -339,5 +380,13 @@ public class DialogServerRita extends JDialog implements Observer {
 			}
 		}
 		return ip;
+	}
+
+	public LogServer getLogServer() {
+		return logServer;
+	}
+
+	public void setLogServer(LogServer logServer) {
+		this.logServer = logServer;
 	}
 }

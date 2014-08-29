@@ -6,7 +6,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 import rita.battle.BatallaBin;
 import rita.settings.Settings;
-import rita.widget.DialogLogRita;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +54,7 @@ public class ServerRita extends Thread {
 	private boolean start = false;
 	
 	private ArrayList<String> robotsEnBatalla;
+	private LogRitaObservable logRitaObservable;
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
 
@@ -66,9 +66,9 @@ public class ServerRita extends Thread {
 		this.start = start;
 	}
 
-	public static ServerRita getInstance(int port, ClientesConectadosObservable clientes) {
+	public static ServerRita getInstance(int port, ClientesConectadosObservable clientes, LogRitaObservable logRita) {
 		if (instance == null) {
-			instance = new ServerRita(port, clientes);
+			instance = new ServerRita(port, clientes, logRita);
 		}
 		return instance;
 	}
@@ -80,7 +80,6 @@ public class ServerRita extends Thread {
 		// this(DEFAULT_PORT_NUMBER, cantidad);
 		portNumber = DEFAULT_PORT_NUMBER;
 		mensajes = new Mensajes();
-		setLogServer(DialogLogRita.getInstance().getLogServer());
 	}
 
 	/**
@@ -88,16 +87,19 @@ public class ServerRita extends Thread {
 	 * 
 	 * @param defaultPortNumber
 	 */
-	private ServerRita(int defaultPortNumber, ClientesConectadosObservable clientes) {
-		initialize(defaultPortNumber,clientes);
+	private ServerRita(int defaultPortNumber, ClientesConectadosObservable clientes, LogRitaObservable logRita) {
+		initialize(defaultPortNumber,clientes, logRita);
 	}
 
-	private void initialize(int defaultPortNumber, ClientesConectadosObservable clientes) {
+	private void initialize(int defaultPortNumber, ClientesConectadosObservable clientes, LogRitaObservable logRita) {
 		portNumber = defaultPortNumber;
 		clientesConectadosObservable = clientes;
+		logRitaObservable = logRita;
 		mensajes = new Mensajes();
 		robotsEnBatalla = new ArrayList<String>();
-		setLogServer(DialogLogRita.getInstance().getLogServer());
+//		setLogServer(DialogLogRita.getInstance().getLogServer());
+		setLogServer(new LogServer());
+//		getLogServer().setLogRitaObservable(logRitaObservable);
 	}
 
 	public int getPortNumber() {
@@ -143,8 +145,7 @@ public class ServerRita extends Thread {
 						&& !iniciarBatalla) {
 					try {
 						String texto = "Servidor a la espera de conexiones.";
-						log.info(texto);						
-						getLogServer().setTexto(texto);
+						guardarLog(texto);
 						socket = serverSocket.accept(); // Aceptando las
 														// conexiones
 					} catch (InterruptedIOException e) {
@@ -157,8 +158,7 @@ public class ServerRita extends Thread {
 						String texto = "Cliente con la IP "
 								+ socket.getInetAddress().getHostAddress()
 								+ " conectado.";
-						log.info(texto);
-						getLogServer().setTexto(texto);
+						guardarLog(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes, clientesConectadosObservable, this);
@@ -233,6 +233,11 @@ public class ServerRita extends Thread {
 		}
 
 	}
+	
+	public void guardarLog(String texto){
+		log.info(texto);						
+		logRitaObservable.changeData(texto);
+	}
 
 	/**
 	 * Ejecuta robocode
@@ -243,9 +248,7 @@ public class ServerRita extends Thread {
 		Settings.getSO().ejecutarComando(cmd);
 		log.info(cmd);
 		String texto = "Se ejecuta Robocode en el Servidor";
-		log.info(texto);
-		getLogServer().setTexto(texto);
-		
+		guardarLog(texto);
 	}
 
 	private void reiniciarVariables() {
@@ -270,9 +273,7 @@ public class ServerRita extends Thread {
 			serverSocket = new ServerSocket(portNumber, MAX_CONNECTIONS);
 			serverSocket.setSoTimeout(TIMEOUT);
 			texto = "Servidor iniciando...";
-			log.info(texto);
-			getLogServer().setTexto(texto);
-			
+			guardarLog(texto);			
 		} catch (IOException e) {
 			texto = "No se puede crear el socket";
 			log.error(texto);
@@ -295,16 +296,13 @@ public class ServerRita extends Thread {
 		getLogServer().setTexto(texto);
 		BatallaBin.compilarRobots(mensajes);
 		texto = "Se compilan los archivo .java";
-		log.info(texto);
-		getLogServer().setTexto(texto);
+		guardarLog(texto);
 		BatallaBin.crearArchivoBatalla(mensajes,this.rondas);
 		texto = "Se crea el archivo .battle de configuracion";
-		log.info(texto);
-		getLogServer().setTexto(texto);
+		guardarLog(texto);
 		BatallaBin.generarArchivoBinario();
 		texto = "Ejecuta la batalla y crea el bin";
-		log.info(texto);
-		getLogServer().setTexto(texto);
+		guardarLog(texto);
 		mensajes.setGeneroBin(true);
 		BatallaBin.borrarArchivosRobots(mensajes);
 	}
@@ -314,8 +312,7 @@ public class ServerRita extends Thread {
 	 */
 	public void stopServer() {
 		String texto = "Servidor detenido.";
-		log.info(texto);		
-		getLogServer().setTexto(texto);
+		guardarLog(texto);
 		setShutDownFlag(true);
 		//CREO UN SOCKET SIMULANDO UNA CONEXION PARA SALIR DEL WHILE DE ESPERA DE CONEXIONES
 		try {
