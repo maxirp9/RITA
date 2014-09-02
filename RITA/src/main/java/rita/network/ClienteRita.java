@@ -3,8 +3,14 @@ package rita.network;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
 
@@ -97,7 +103,12 @@ public class ClienteRita extends Thread {
 	public void run() {
 		log.info("Cliente Dame conexion");	
 		System.out.println(socket.getLocalAddress().getHostName());
-		if(!socket.getLocalAddress().getHostName().contains("localhost") && !socket.getLocalAddress().getHostName().contains("127.0.0.1"))
+		
+		InetSocketAddress socketAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
+		String ipRemota = socketAddress.getAddress().getHostAddress().toString();
+
+		if(!socket.getLocalAddress().getHostName().contains("localhost") && !socket.getLocalAddress().getHostName().contains("127.0.0.1")
+				&& !ipRemota.equals(traerIp()))
 			this.ejecutarRobocode = true;			
 		recibirMensajesServidor();
 		closeClient();
@@ -232,4 +243,38 @@ public class ClienteRita extends Thread {
 		this.ventantaAbierta = ventantaAbierta;
 	}
 
+	
+	public String traerIp() {
+		Enumeration<NetworkInterface> interfaces = null;
+		String ip = "";
+		try {
+			interfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		while (interfaces.hasMoreElements()) {
+			NetworkInterface current = interfaces.nextElement();
+			// System.out.println("1er " + current);
+			if (current.getName().startsWith("eth")
+					|| current.getName().startsWith("wlan")) {
+				try {
+					if (!current.isUp() || current.isLoopback()
+							|| current.isVirtual())
+						continue;
+				} catch (SocketException e) {
+					e.printStackTrace();
+				}
+				Enumeration<InetAddress> addresses = current.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress current_addr = addresses.nextElement();
+					if (current_addr instanceof Inet4Address)
+						ip = current_addr.getHostAddress().toString();
+					if (current_addr.isLoopbackAddress())
+						continue;
+
+				}
+			}
+		}
+		return ip;
+	}
 }
