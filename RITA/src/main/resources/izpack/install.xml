@@ -41,10 +41,18 @@
 
 	<!-- Requerido para crear los accesos directos en sistemas Windows -->
 	<!--<native type="izpack" name="ShellLink.dll"/>-->
-	<natives>
-		<native type="izpack" name="ShellLink.dll" />
-		<native type="izpack" name="ShellLink_x64.dll" />
-	</natives>
+<!-- 	<natives> -->
+<!-- 		<native type="izpack" name="ShellLink.dll" /> -->
+<!-- 		<native type="izpack" name="ShellLink_x64.dll" /> -->
+<!-- 	</natives> -->
+	
+	<native type="izpack" name="ShellLink.dll">
+  		<os family="windows" />
+	</native>
+	<native type="izpack" name="ShellLink_x64.dll">
+  		<os family="windows" />
+	</native>
+	
 	<guiprefs width="800" height="600" resizable="no">
 		<splash>images/rita_con_titulo.jpg</splash>
 		<!--
