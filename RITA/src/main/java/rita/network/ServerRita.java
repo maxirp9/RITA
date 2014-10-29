@@ -48,7 +48,6 @@ public class ServerRita extends Thread {
 	private ClientesConectadosObservable clientesConectadosObservable;
 
 	private Logger log = Logger.getLogger(ServerRita.class);
-	private LogServer logServer;
 
 	private ServerSocket serverSocket;
 	private boolean start = false;
@@ -98,7 +97,6 @@ public class ServerRita extends Thread {
 		mensajes = new Mensajes();
 		robotsEnBatalla = new ArrayList<String>();
 //		setLogServer(DialogLogRita.getInstance().getLogServer());
-		setLogServer(new LogServer());
 //		getLogServer().setLogRitaObservable(logRitaObservable);
 	}
 
@@ -293,7 +291,7 @@ public class ServerRita extends Thread {
 
 	private void executeBattle() {
 		String texto = "En proceso de ejecución de la batalla";
-		getLogServer().setTexto(texto);
+		guardarLog(texto);
 		BatallaBin.compilarRobots(mensajes);
 		texto = "Se compilan los archivo .java";
 		guardarLog(texto);
@@ -346,14 +344,6 @@ public class ServerRita extends Thread {
 
 		this.robotsEnBatalla.add(nombreArchivo);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
-	}
-
-	public LogServer getLogServer() {
-		return logServer;
-	}
-
-	public void setLogServer(LogServer logServer) {
-		this.logServer = logServer;
 	}
 
 	public void deleteRobotName(String nombreRobot) {
