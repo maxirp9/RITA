@@ -360,7 +360,7 @@
                   <copy todir="${staging.dir}/dependency">
                       <fileset dir="${basedir}/src/main/resources/lib" includes="RITA-batalla.jar" />
                   </copy>
-                  
+                                  
                   <copy todir="${staging.dir}/support">
                       <fileset dir="${basedir}/src/main/resources/support" includes="advanced_code.xml" />
                       <fileset dir="${basedir}/src/main/resources/support" includes="junior_code.xml" />
