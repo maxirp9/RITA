@@ -80,7 +80,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 				if (this.hayPedidoBinario()){
 					this.enviarArchivoBinario();
 					textoLog = "Envio del archivo Binario al cliente: "
-							+ socket.getInetAddress().getHostAddress();
+							+ this.nombreRobot + " (" +socket.getInetAddress().getHostAddress() + ")";
 					this.server.guardarLog(textoLog);
 				}
 				else
@@ -165,6 +165,10 @@ public class ServerWorkerRita extends Thread implements Observer {
 			
 			server.addRobotNames(nombreArchivo);
 			nombreRobot = nombreArchivo;
+			String texto = "Cliente con la IP "
+					+ this.nombreRobot + " (" +socket.getInetAddress().getHostAddress() + ") conectado";
+			this.server.guardarLog(texto);
+			
 			log.info("Ya termino la trasferencia del Robot del cliente: "
 					+ socket.getInetAddress().getHostAddress());
 			// Se cierra fichero

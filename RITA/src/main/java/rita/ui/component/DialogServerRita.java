@@ -126,7 +126,7 @@ public class DialogServerRita extends JDialog implements Observer {
 	 */
 	public void correr() {
 
-		setBounds(250, 200, 416, 413);
+		setBounds(250, 200, 515, 415);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -212,7 +212,7 @@ public class DialogServerRita extends JDialog implements Observer {
 		rondas = comboBoxRondas;
 		
 		JLabel lblTextAreaLog = new JLabel("Registro de Eventos:");
-		lblTextAreaLog.setBounds(217, 12, 193, 15);
+		lblTextAreaLog.setBounds(262, 12, 193, 15);
 		contentPanel.add(lblTextAreaLog);
 		
 		
@@ -223,7 +223,7 @@ public class DialogServerRita extends JDialog implements Observer {
 
 		JScrollPane scrollPaneLog = new JScrollPane(textAreaLog, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPaneLog.setBounds(200, 37, 200, 260);
+		scrollPaneLog.setBounds(200, 37, 296, 268);
 		contentPanel.add(scrollPaneLog);
 		
 		JButton btnLimpiarRegistro = new JButton("Limpiar Registro");
@@ -232,7 +232,7 @@ public class DialogServerRita extends JDialog implements Observer {
 				textAreaLog.setText("");
 			}
 		});
-		btnLimpiarRegistro.setBounds(236, 312, 164, 25);
+		btnLimpiarRegistro.setBounds(279, 312, 164, 25);
 		contentPanel.add(btnLimpiarRegistro);
 		
 		{

@@ -150,11 +150,13 @@ public class ClienteRita extends Thread {
 					conexionServidor.enviarMensaje(mensajeAEnviar);
 					log.info("Pide el binario el cliente: "
 							+ getMiDireccion());
+					DialogClientRita.startWait();
 					conexionServidor.recibirArchivo("batalla.copia.bin");
 			
 				if(this.ejecutarRobocode)
 					ejecutarRobocode();
 					DialogClientRita.resetearBotones();
+					DialogClientRita.stopWait();
 				}
 			}else
 			{

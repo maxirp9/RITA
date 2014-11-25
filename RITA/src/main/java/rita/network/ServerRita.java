@@ -141,11 +141,11 @@ public class ServerRita extends Thread {
 			// Esperando las conexiones nuevas
 			try {
 
+				String texto = "Servidor a la espera de conexiones.";
+				guardarLog(texto);
 				while (!shutDownFlag && true && (activeConnectionCount < MAX_CONNECTIONS)
 						&& !iniciarBatalla) {
 					try {
-						String texto = "Servidor a la espera de conexiones.";
-						guardarLog(texto);
 						socket = serverSocket.accept(); // Aceptando las
 														// conexiones
 					} catch (InterruptedIOException e) {
@@ -155,10 +155,6 @@ public class ServerRita extends Thread {
 					if (!shutDownFlag && !iniciarBatalla) {
 						// SUMO SOLO LOS CONECTADOS
 						//setActiveConnectionCount(activeConnectionCount + 1);
-						String texto = "Cliente con la IP "
-								+ socket.getInetAddress().getHostAddress()
-								+ " conectado.";
-						guardarLog(texto);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes, clientesConectadosObservable, this);

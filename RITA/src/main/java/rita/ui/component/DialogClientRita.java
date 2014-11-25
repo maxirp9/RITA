@@ -2,6 +2,7 @@ package rita.ui.component;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Point;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -11,15 +12,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.RootPaneContainer;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import controller.WorkspaceController;
 import rita.network.ClienteRita;
+import rita.network.CursorToolkitTwo;
 import rita.network.EjecutarComando;
 import rita.network.Mensaje;
 import rita.settings.HelperEditor;
 import rita.settings.Settings;
+import rita.widget.SourceCode;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -41,18 +46,23 @@ public class DialogClientRita extends JDialog {
 	private Logger log = Logger.getLogger(DialogClientRita.class);
 	private static JLabel lblOn;
 	private static JLabel lblOff;
+	private static JLabel lblAviso;
 	private static JButton okButton;
 	public static ClienteRita clienteRita;
+	private static java.awt.Frame padre;
+	private static CursorToolkitTwo cursor;
 	
 	public void dispose(){
 		RMenu.setDialogClientOpen(false);
 		if(clienteRita != null)
 			clienteRita.setVentantaAbierta(false);
+		cursor.stopWaitCursor(((RootPaneContainer) padre).getRootPane());
 		super.dispose();
 	}
 
 	public DialogClientRita(java.awt.Frame parent, String titulo, boolean modal) {
 		super(parent);
+		padre = parent;
 		setResizable(false);
 		initialize();
 	}
@@ -90,8 +100,10 @@ public class DialogClientRita extends JDialog {
 	public void crearDialog() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Conexion con servidor");
-		setBounds(100, 100, 247, 204);
-		setLocation(700, 100);
+		setBounds(100, 100, 247, 204);		
+		setLocationRelativeTo(padre);
+		Point p = padre.getLocationOnScreen();
+		setLocation(60, padre.getBounds().height - 250);
 		getContentPane().setLayout(new BorderLayout());
 		{
 			JPanel panel = new JPanel();
@@ -129,6 +141,10 @@ public class DialogClientRita extends JDialog {
 			lblRobotName.setBounds(64, 77, 114, 15);
 			lblRobotName.setText(HelperEditor.currentRobotName);			
 			panel.add(lblRobotName);
+			
+			lblAviso = new JLabel("");
+			lblAviso.setBounds(12, 121, 223, 15);
+			panel.add(lblAviso);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -137,6 +153,8 @@ public class DialogClientRita extends JDialog {
 			{
 				okButton = new JButton("Conectar");
 				okButton.addActionListener(new ActionListener() {
+					
+
 					public void actionPerformed(ActionEvent arg0) {
 					
 						log.info("Quieres conectarte a " + textFieldIP.getText() + " en el puerto " + textFieldPuerto.getText()
@@ -149,7 +167,11 @@ public class DialogClientRita extends JDialog {
 									lblOn.setVisible(true);
 									lblOff.setVisible(false);
 									okButton.setEnabled(false);
+									lblAviso.setText("Espere la ejecucion de la batalla");
+									lblAviso.setVisible(true);
 									clienteRita.start();
+									cursor = new CursorToolkitTwo();
+									
 								} catch (IllegalThreadStateException e) {
 									JOptionPane.showMessageDialog(DialogClientRita.this, "Ya envio su robot","Error de conexion",
 											JOptionPane.ERROR_MESSAGE);
@@ -208,6 +230,7 @@ public class DialogClientRita extends JDialog {
 		lblOn.setVisible(false);
 		lblOff.setVisible(true);
 		okButton.setEnabled(true);
+		lblAviso.setText("");
 	}
 
 
@@ -216,5 +239,14 @@ public class DialogClientRita extends JDialog {
 	}
 	public void setMiDireccion(String miDireccion) {
 		this.miDireccion = miDireccion;
+	}
+
+	public static void startWait() {
+		// TODO Auto-generated method stub
+		cursor.startWaitCursor(((RootPaneContainer) padre).getRootPane());
+	}
+	public static void stopWait() {
+		// TODO Auto-generated method stub
+		cursor.stopWaitCursor(((RootPaneContainer) padre).getRootPane());
 	}
 }
