@@ -41,10 +41,10 @@
 
 	<!-- Requerido para crear los accesos directos en sistemas Windows -->
 	<!--<native type="izpack" name="ShellLink.dll"/>-->
-<!-- 	<natives> -->
-<!-- 		<native type="izpack" name="ShellLink.dll" /> -->
-<!-- 		<native type="izpack" name="ShellLink_x64.dll" /> -->
-<!-- 	</natives> -->
+	<natives>
+		<native type="izpack" name="ShellLink.dll" />
+		<native type="izpack" name="ShellLink_x64.dll" />
+	</natives>
 	
 	<native type="izpack" name="ShellLink.dll">
   		<os family="windows" />
@@ -157,6 +157,10 @@
 			<file src="izpack/rita.sh" targetdir="$INSTALL_PATH" />
 			<file src="izpack/uninstall.bat" targetdir="$INSTALL_PATH/Uninstaller" />
 			<file src="izpack/rita.ico" targetdir="$INSTALL_PATH" />
+
+			<executable targetfile="$INSTALL_PATH/rita.sh" stage="never">
+            	<os family="unix"/>
+        	</executable>
 
 			<!-- Robots de nivel 1 -->
 			<file src="robots/sample/RamFire.class" targetdir="$INSTALL_PATH/robots/sample" />

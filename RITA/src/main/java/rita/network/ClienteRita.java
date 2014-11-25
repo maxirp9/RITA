@@ -133,11 +133,15 @@ public class ClienteRita extends Thread {
 			mensajeRecibido = conexionServidor.recibirMensaje();
 			
 			while (!mensajeRecibido.accion.equals("ParoServidor") && !mensajeRecibido.accion.equals("BinGenerado") && ventantaAbierta) {
-				log.error("El Cliente "
+				log.info("El Cliente "
 						+ getMiDireccion()
-						+ " espera BinGenerado y recibe mensaje incorrecto:"
+						+ " recibe mensaje incorrecto:"
 						+ mensajeRecibido.accion);
-				
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				mensajeRecibido = conexionServidor.recibirMensaje();
 			}
 			if(!mensajeRecibido.accion.equals("ParoServidor")){

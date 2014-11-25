@@ -104,6 +104,7 @@ public class DialogClientRita extends JDialog {
 		setLocationRelativeTo(padre);
 		Point p = padre.getLocationOnScreen();
 		setLocation(60, padre.getBounds().height - 250);
+
 		getContentPane().setLayout(new BorderLayout());
 		{
 			JPanel panel = new JPanel();
@@ -111,34 +112,34 @@ public class DialogClientRita extends JDialog {
 			panel.setLayout(null);
 			{
 				JLabel lblIP = new JLabel("IP:");
-				lblIP.setBounds(12, 23, 18, 15);
+				lblIP.setBounds(12, 31, 18, 15);
 				panel.add(lblIP);
 			}
 			{
 				textFieldIP = new JTextField();
 				textFieldIP.setText("127.0.0.1");
-				textFieldIP.setBounds(64, 21, 114, 19);
+				textFieldIP.setBounds(66, 27, 114, 24);
 				panel.add(textFieldIP);
 				textFieldIP.setColumns(15);
 			}
 			{
 				JLabel lblPuerto = new JLabel("Puerto:");
-				lblPuerto.setBounds(12, 48, 70, 15);
+				lblPuerto.setBounds(12, 56, 70, 15);
 				panel.add(lblPuerto);
 			}
 			
 			textFieldPuerto = new JTextField();
 			textFieldPuerto.setText("1234");
-			textFieldPuerto.setBounds(64, 46, 114, 19);
+			textFieldPuerto.setBounds(66, 52, 114, 24);
 			panel.add(textFieldPuerto);
 			textFieldPuerto.setColumns(10);
 			
 			JLabel lblRobot = new JLabel("Robot:");
-			lblRobot.setBounds(12, 77, 70, 15);
+			lblRobot.setBounds(12, 83, 70, 15);
 			panel.add(lblRobot);
 			
 			JLabel lblRobotName = new JLabel("");
-			lblRobotName.setBounds(64, 77, 114, 15);
+			lblRobotName.setBounds(64, 83, 114, 15);
 			lblRobotName.setText(HelperEditor.currentRobotName);			
 			panel.add(lblRobotName);
 			

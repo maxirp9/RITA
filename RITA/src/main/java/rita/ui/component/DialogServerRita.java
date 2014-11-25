@@ -13,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import rita.network.CantidadConexionesObservable;
 import rita.network.ClientesConectadosObservable;
 import rita.network.LogRitaObservable;
-import rita.network.LogServer;
 import rita.network.ServerRita;
 import workspace.Workspace;
 
@@ -64,7 +63,6 @@ public class DialogServerRita extends JDialog implements Observer {
 	private JLabel lblServerOff;
 	private Workspace ws;
 //	private DialogLogRita logRita;
-	private LogServer logServer;
 	private LogRitaObservable logRitaObservable;
 	private JTextArea textAreaLog;
 	
@@ -133,12 +131,12 @@ public class DialogServerRita extends JDialog implements Observer {
 		contentPanel.setLayout(null);
 		{
 			JLabel lblPort = new JLabel("Puerto:");
-			lblPort.setBounds(12, 39, 53, 15);
+			lblPort.setBounds(12, 34, 53, 15);
 			contentPanel.add(lblPort);
 		}
 		{
 			textPort = new JTextField();
-			textPort.setBounds(71, 37, 53, 19);
+			textPort.setBounds(71, 33, 53, 22);
 			textPort.setText("1234");
 			textPort.setColumns(10);
 			contentPanel.add(textPort);
@@ -382,11 +380,4 @@ public class DialogServerRita extends JDialog implements Observer {
 		return ip;
 	}
 
-	public LogServer getLogServer() {
-		return logServer;
-	}
-
-	public void setLogServer(LogServer logServer) {
-		this.logServer = logServer;
-	}
 }
