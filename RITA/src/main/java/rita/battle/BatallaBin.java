@@ -22,6 +22,7 @@ public class BatallaBin {
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath()  + File.separator  + "lib";
 	static String directorioRobocodeBatallas = Settings.getInstallPath() + File.separator + "battles";
+	static String directorioRobocodeBinario = Settings.getInstallPath() + File.separator + "binary";
 	
 	/**
 	 * Creacion del archivo de configuracion de la batalla con los robots
@@ -216,6 +217,22 @@ public class BatallaBin {
 			archivoClass = new File(archivo + "java");
 			archivoClass.delete();
 		}
+		
+	}
+	
+	/**
+	 *  Borra los archivos binarios
+	 */
+	public static void borrarArchivosBinarios(){
+		
+		File archivoClass;
+		String dir = Settings.getBinaryPath();
+			
+		String archivo = dir + File.separator;
+		archivoClass = new File(archivo+ "batalla.bin");
+		archivoClass.delete();
+		archivoClass = new File(archivo + "batalla.copia.bin");
+		archivoClass.delete();
 		
 	}
 

@@ -10,10 +10,12 @@ import rita.settings.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author pvilaltella
@@ -30,7 +32,7 @@ public class ServerRita extends Thread {
 	// Cantidad maxima de conexiones que acepta el servidor
 	private final static int MAX_CONNECTIONS = 10;
 	// Maximo tiempo de espera de la conexion
-	private final static int TIMEOUT = 300000;
+	private final static int TIMEOUT = 30000;
 	// Puerto donde se escuchan los pedido de conexiones
 	private int portNumber;
 	// Se pone en verdadero cuando el servidor se debe apagar
@@ -57,6 +59,7 @@ public class ServerRita extends Thread {
 	
 	static String directorioRobocodeLibs = Settings.getInstallPath() + File.separator + "lib";
 
+	private Boolean binGenerado = false;
 	public boolean isStart() {
 		return start;
 	}
@@ -129,30 +132,33 @@ public class ServerRita extends Thread {
 		// Carga el archivo de configuracion de log4J
 		PropertyConfigurator.configure("log4j.properties");
 		// Mensajes mensajes = new Mensajes();
+		ArrayList<Socket> socketes = new ArrayList<Socket>();
 		Socket socket = null;
-		createServerSocket();
-		setIp(serverSocket.getInetAddress().toString());
+
 		createFolders();
 
 		// While para mantener el servidor activo hasta el envio del apagado
 		while (!shutDownFlag) {
 			// Esperando las conexiones nuevas
 			try {
+				reiniciarVariables();
+				createServerSocket();
 
 				String texto = "Servidor a la espera de conexiones.";
 				guardarLog(texto);
 				while (!shutDownFlag && true && (activeConnectionCount < MAX_CONNECTIONS)
 						&& !iniciarBatalla) {
 					try {
-						socket = serverSocket.accept(); // Aceptando las
-														// conexiones
+						socket = serverSocket.accept(); // Aceptando las conexiones
+						socketes.add(socket);
+						socket.setKeepAlive(true);
 					} catch (InterruptedIOException e) {
 						log.error("Error: " + e.getMessage());
 					} // try
 
 					if (!shutDownFlag && !iniciarBatalla) {
 						// SUMO SOLO LOS CONECTADOS
-						//setActiveConnectionCount(activeConnectionCount + 1);
+						setActiveConnectionCount(activeConnectionCount + 1);
 						// Crea el objeto worker para procesar las conexiones
 						ServerWorkerRita serverWorkerRita = new ServerWorkerRita(
 								socket, mensajes, clientesConectadosObservable, this);
@@ -160,6 +166,7 @@ public class ServerRita extends Thread {
 					}
 
 				} // end del While
+				closeServerSocket();
 				while (!shutDownFlag && mensajes.getCantidadRobots() < activeConnectionCount) {
 					// A la espera de todos los robots
 					try {
@@ -167,42 +174,38 @@ public class ServerRita extends Thread {
 						log.info("El Server esperando a los ROBOTS..."
 								+ mensajes.getCantidadRobots() + " de "
 								+ activeConnectionCount);
-						Thread.sleep(1000);
+						Thread.sleep(3000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 				if(!shutDownFlag)
 					executeBattle();
-				// Espero que los workers envien los archivos para reiniciar el
-				// servidor
-				while (!shutDownFlag && mensajes.getCantidadConexiones() < activeConnectionCount) {
+				
+				// Ejecuto Robocode en el Servidor
+				if(!shutDownFlag)
+					this.ejecutarRobocode();
+
+				// Espero a que terminen los workers para reiniciar el servidor
+				while (!shutDownFlag && mensajes.getCierreWorkers() < activeConnectionCount) {
 					try {
-						log.info("El Server esperando a los hilos..."
-								+ mensajes.getCantidadConexiones() + " de "
+						log.info("El Server esperando que terminen los workers..."
+								+ mensajes.getCierreWorkers() + " de "
 								+ activeConnectionCount);
-						Thread.sleep(2000);
+						Thread.sleep(3000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				// Ejecuto Robocode en el Servidor
-				if(!shutDownFlag)
-					this.ejecutarRobocode();
-				// Pongo en false para queden esperando nuevamente los hilos
-				closeServerSocket();
-				if(!shutDownFlag)
-					createServerSocket();
-				reiniciarVariables();
-				// NO debería cerrar las conexiones hasta que no se envien todos
 				// los mensajes
 			} catch (IOException e) {
 				log.error("Error de input");
 			}
 		}// Cierre while del cierre del servidor
 		
-		if(shutDownFlag)
+		if(shutDownFlag){
 			log.info("Stop Servidor");
+		}
 	}
 	
 	private void createFolders() {
@@ -238,7 +241,7 @@ public class ServerRita extends Thread {
 	 */
 	public void ejecutarRobocode() { 
 		
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.copia.bin" + " -tps 25";
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -replay " + Settings.getBinaryPath() + File.separator + "batalla.bin" + " -tps 25";
 		Settings.getSO().ejecutarComando(cmd);
 		log.info(cmd);
 		String texto = "Se ejecuta Robocode en el Servidor";
@@ -247,16 +250,19 @@ public class ServerRita extends Thread {
 
 	private void reiniciarVariables() {
 
-		mensajes.setGeneroBin(false);
 		setActiveConnectionCount(0);
 		mensajes.setCantidadRobots(0);
 		mensajes.setCantidadConexiones(0);
+		mensajes.setCierreWorkers(0);
 		setIniciarBatalla(false);
 		// BatallaBin.borrarArchivoBatalla();
 		mensajes.getRobotsEnBatalla().clear();
 		robotsEnBatalla.clear();
 		//AVISO QUE CAMBIO TERMINO LA EJECUCION PARA LIMPIAR LOS ROBOTS EN PANTALLA
 		clientesConectadosObservable.changeData(robotsEnBatalla);
+		BatallaBin.borrarArchivosBinarios();
+		BatallaBin.borrarArchivosRobots(mensajes);
+		setBinGenerado(false);
 
 	}
 
@@ -265,9 +271,9 @@ public class ServerRita extends Thread {
 		try {
 			// Creo el ServerSocket
 			serverSocket = new ServerSocket(portNumber, MAX_CONNECTIONS);
-			serverSocket.setSoTimeout(TIMEOUT);
 			texto = "Servidor iniciando...";
-			guardarLog(texto);			
+			guardarLog(texto);
+			setIp(serverSocket.getInetAddress().toString());
 		} catch (IOException e) {
 			texto = "No se puede crear el socket";
 			log.error(texto);
@@ -297,8 +303,8 @@ public class ServerRita extends Thread {
 		BatallaBin.generarArchivoBinario();
 		texto = "Ejecuta la batalla y crea el bin";
 		guardarLog(texto);
-		mensajes.setGeneroBin(true);
-		BatallaBin.borrarArchivosRobots(mensajes);
+//		mensajes.setGeneroBin(true);
+		setBinGenerado(true);
 	}
 
 	/**
@@ -316,6 +322,7 @@ public class ServerRita extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		reiniciarVariables();
 		//VARIABLE SINGLETON
 		instance = null;
 	}
@@ -346,6 +353,7 @@ public class ServerRita extends Thread {
 		this.robotsEnBatalla.remove(nombreRobot);
 		clientesConectadosObservable.changeData(robotsEnBatalla);
 		mensajes.getRobotsEnBatalla().remove(nombreRobot);
+		this.activeConnectionCount--;
 	}
 
 	public String getRondas() {
@@ -354,6 +362,14 @@ public class ServerRita extends Thread {
 
 	public void setRondas(String rondas) {
 		this.rondas = rondas;
+	}
+
+	public Boolean getBinGenerado() {
+		return binGenerado;
+	}
+
+	public void setBinGenerado(Boolean binGenerado) {
+		this.binGenerado = binGenerado;
 	}
 
 }

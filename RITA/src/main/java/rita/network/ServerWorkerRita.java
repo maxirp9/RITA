@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import rita.settings.Settings;
 
-public class ServerWorkerRita extends Thread implements Observer {
+public class ServerWorkerRita extends Thread {
 
 	private Logger log = Logger.getLogger(ServerWorkerRita.class);
 	private Socket socket;
@@ -23,6 +23,8 @@ public class ServerWorkerRita extends Thread implements Observer {
 	private Mensajes mensajes;
 	private ServerRita server;
 	private String nombreRobot;
+	private boolean errorConexion;
+	private boolean generoBin = false;
 
 	static String directorioTempRobots = Settings.getRobotsnetPath();
 
@@ -43,35 +45,32 @@ public class ServerWorkerRita extends Thread implements Observer {
 	public void run() {
 		String textoLog;
 
-		boolean errorConexion = false;
-		// Se apunta a la lista de observadores de mensajes
-		mensajes.addObserver(this);
+		setErrorConexion(false);
 
 		this.aceptarConexion();
 		this.iniciarConexionEntrada();
 		this.pedirRobot();
 
-		while (!server.isShutDownFlag() && !mensajes.getGeneroBin() && !errorConexion) {
+		while (!server.isShutDownFlag() && !server.getBinGenerado() && !errorConexion) {
 			// Esperando que se genere el bin
 			try {
 				log.info("El Cliente "
 						+ socket.getInetAddress().getHostAddress()
 						+ " esperando el bin ...");
-				Thread.sleep(1000);
+				Thread.sleep(3000);
 				
-				Mensaje mensajeAEnviar = new Mensaje("VerificoConexion", socket.getInetAddress().getHostAddress());
+				Mensaje mensajeAEnviar = new Mensaje("VerificoConexion " , socket.getInetAddress().getHostAddress());
 				try {
 					salidaDatos.writeObject(mensajeAEnviar);
 				} catch (IOException e) {
 					e.printStackTrace();
-					errorConexion = true;					
+					setErrorConexion(true);
 				}
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		} // WHILE
-		
+
 		if(!server.isShutDownFlag()){
 			if (!errorConexion){
 	
@@ -86,7 +85,6 @@ public class ServerWorkerRita extends Thread implements Observer {
 				else
 					log.error("Falla del pedido binario del Cliente: "
 							+ socket.getInetAddress().getHostAddress());
-				mensajes.incrementarCantidadConexiones();
 				try {
 					entradaDatos.close();
 					salidaDatos.close();
@@ -95,7 +93,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 							+ ex2.getMessage());
 				}
 			}else{
-				this.server.deleteRobotName(this.nombreRobot);
+				this.server.deleteRobotName(this.nombreRobot);				
 			}
 		}else{
 			Mensaje mensajeAEnviar = new Mensaje("ParoServidor", socket.getInetAddress().getHostAddress());
@@ -103,9 +101,10 @@ public class ServerWorkerRita extends Thread implements Observer {
 				salidaDatos.writeObject(mensajeAEnviar);
 			} catch (IOException e) {
 				e.printStackTrace();
-				errorConexion = true;					
+				setErrorConexion(true);
 			}
 		}
+		mensajes.incrementarCierreWorkers();
 	}
 
 	private void iniciarConexionEntrada() {
@@ -192,6 +191,7 @@ public class ServerWorkerRita extends Thread implements Observer {
 			Object datoLeido = null;
 			Mensaje mensajeRecibido = null;
 			datoLeido = entradaDatos.readObject();
+			
 			if (datoLeido instanceof Mensaje)
 				mensajeRecibido = (Mensaje) datoLeido;
 
@@ -278,27 +278,17 @@ public class ServerWorkerRita extends Thread implements Observer {
 
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-
-		/*
-		 * try { // Envia el mensaje al cliente
-		 * salidaDatos.writeUTF(arg.toString()); } catch (IOException ex) {
-		 * log.error("Error al enviar mensaje al cliente (" + ex.getMessage() +
-		 * ")."); }
-		 */
-	}
-
 	private void aceptarConexion() {
 		
-		log.info("Soy hilo de " + socket.getInetAddress().getHostAddress());
+		log.info("Soy hilo de " + Thread.currentThread().getId() + " " + socket.getInetAddress().getHostAddress());
 		Mensaje mensajeAEnviar = new Mensaje("ListoHilo", socket.getInetAddress().getHostAddress());
 		try {
 			salidaDatos.writeObject(mensajeAEnviar);
+			mensajes.setMensaje(mensajeAEnviar.accion);		
+			mensajes.incrementarCantidadConexiones();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		mensajes.setMensaje(mensajeAEnviar.accion);
 	}
 
 	private void binGenerado() {
@@ -309,9 +299,25 @@ public class ServerWorkerRita extends Thread implements Observer {
 		mensajes.setMensaje(mensajeAEnviar.accion);
 		try {
 			salidaDatos.writeObject(mensajeAEnviar);
+			mensajes.setMensaje(mensajeAEnviar.accion);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		mensajes.setMensaje(mensajeAEnviar.accion);
+	}
+
+	public boolean isErrorConexion() {
+		return errorConexion;
+	}
+
+	public void setErrorConexion(boolean errorConexion) {
+		this.errorConexion = errorConexion;
+	}
+
+	public boolean isGeneroBin() {
+		return generoBin;
+	}
+
+	public void setGeneroBin(boolean generoBin) {
+		this.generoBin = generoBin;
 	}
 }
