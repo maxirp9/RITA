@@ -32,6 +32,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 
 public class DialogClientRita extends JDialog {
@@ -54,8 +55,10 @@ public class DialogClientRita extends JDialog {
 	
 	public void dispose(){
 		RMenu.setDialogClientOpen(false);
-		if(clienteRita != null)
+		if(clienteRita != null){
 			clienteRita.setVentantaAbierta(false);
+			clienteRita.closeClient();
+		}
 		cursor.stopWaitCursor(((RootPaneContainer) padre).getRootPane());
 		super.dispose();
 	}
@@ -180,9 +183,11 @@ public class DialogClientRita extends JDialog {
 								}
 							
 							} catch (ConnectException e) {
-	
 								//e.printStackTrace();
 								JOptionPane.showMessageDialog(DialogClientRita.this, "No se puede realizar la conexion con el servidor, verifique la IP y que este iniciado","Error de conexion",
+									    JOptionPane.ERROR_MESSAGE);
+							} catch (NoRouteToHostException e) {
+								JOptionPane.showMessageDialog(DialogClientRita.this, "No se puede llegar al servidor","Error de conexion",
 									    JOptionPane.ERROR_MESSAGE);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();

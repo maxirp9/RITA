@@ -135,15 +135,13 @@ public class ClienteRita extends Thread {
 			while (!mensajeRecibido.accion.equals("ParoServidor") && !mensajeRecibido.accion.equals("BinGenerado") && ventantaAbierta) {
 				log.info("El Cliente "
 						+ getMiDireccion()
-						+ " recibe mensaje incorrecto:"
+						+ " recibe mensaje:"
 						+ mensajeRecibido.accion);
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 				mensajeRecibido = conexionServidor.recibirMensaje();
 			}
+			
+			log.info("El Cliente " + getMiDireccion() + " recibe mensaje:" + mensajeRecibido.accion);
+			
 			if(!mensajeRecibido.accion.equals("ParoServidor")){
 				if (ventantaAbierta){
 				//if (mensajeRecibido.accion.equals("BinGenerado")) {
@@ -220,7 +218,7 @@ public class ClienteRita extends Thread {
 		
 	}
 
-	private void closeClient() {
+	public void closeClient() {
 		try {
 			log.info("Cierro el cliente "
 					+ socket.getLocalAddress().getHostAddress());
