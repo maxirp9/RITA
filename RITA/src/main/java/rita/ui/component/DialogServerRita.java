@@ -62,13 +62,10 @@ public class DialogServerRita extends JDialog implements Observer {
 	private JLabel lblServerOn;
 	private JLabel lblServerOff;
 	private Workspace ws;
-//	private DialogLogRita logRita;
 	private LogRitaObservable logRitaObservable;
 	private JTextArea textAreaLog;
 	
 	public void dispose(){
-//		logRita.getLogServer().setTexto("");
-//		ws.removeWidget(logRita);
 		RMenu.setDialogServerOpen(false);
 		if(server != null)
 			server.stopServer();
@@ -79,14 +76,6 @@ public class DialogServerRita extends JDialog implements Observer {
 		super(parent);
 		setResizable(false);
 		this.ws = Workspace.getInstance();
-		
-		/** Agrego el log PABLO */
-//		logRita = DialogLogRita.getInstance();
-//		logRita.setVisible(true);
-//				
-//		this.ws.addWorkspaceListener(logRita);
-//		this.ws.addWidget(logRita, true, true);
-		
 		initialize(title);
 	}
 
@@ -98,8 +87,6 @@ public class DialogServerRita extends JDialog implements Observer {
 			this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			logRitaObservable = new LogRitaObservable();
 			logRitaObservable.addObserver(this);
-//			setLogServer(new LogServer());
-//			getLogServer().setLogRitaObservable(logRitaObservable);
 			this.setVisible(true);
 			correr();
 		} catch (Exception e) {
@@ -108,23 +95,13 @@ public class DialogServerRita extends JDialog implements Observer {
 	}
 
 	/**
-	 * Launch the application.
-	 */
-	/*
-	 * public static void main(String[] args) { try { DialogServerRita dialog =
-	 * new DialogServerRita();
-	 * dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	 * dialog.setVisible(true); } catch (Exception e) { e.printStackTrace(); } }
-	 */
-
-	/**
 	 * Create the dialog.
 	 * 
 	 * @return
 	 */
 	public void correr() {
 
-		setBounds(250, 200, 515, 415);
+		setBounds(250, 100, 515, 415);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

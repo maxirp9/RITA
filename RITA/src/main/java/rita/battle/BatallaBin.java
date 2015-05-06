@@ -1,22 +1,16 @@
 package rita.battle;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.String;
 import java.util.ArrayList;
 
-import net.sf.robocode.security.HiddenAccess;
 import rita.compiler.CompileString;
-import rita.network.EjecutarComando;
 import rita.network.Mensajes;
 import rita.settings.Settings;
-import rita.widget.SourceCode;
-import robocode.Robocode;
 
 public class BatallaBin {
 	
@@ -146,7 +140,7 @@ public class BatallaBin {
 	}
 
 	public static void generarArchivoBinario() {
-		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin";
+		String cmd = "java -Xmx512M -Dsun.io.useCanonCaches=false -cp " + directorioRobocodeLibs + File.separator + "robocode.jar robocode.Robocode -battle " + directorioRobocodeBatallas + File.separator + "batalla.battle -nodisplay -record " +  Settings.getBinaryPath() + File.separator + "batalla.bin -results " + Settings.getInstallPath() + File.separator + "resultado-batalla.txt";
 		Settings.getSO().ejecutarComando(cmd);
 		System.out.println("Comando: " + cmd);		
 						

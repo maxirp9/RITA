@@ -10,12 +10,10 @@ import rita.settings.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * @author pvilaltella

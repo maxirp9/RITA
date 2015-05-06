@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +25,7 @@ public class ServerWorkerRita extends Thread {
 	private boolean generoBin = false;
 
 	static String directorioTempRobots = Settings.getRobotsnetPath();
+	private FileInputStream fis;
 
 	public ServerWorkerRita(Socket socketEntrada, Mensajes mensajeEntrada, ClientesConectadosObservable clientesEntrada, ServerRita serverInstance) {
 		socket = socketEntrada;
@@ -77,10 +76,11 @@ public class ServerWorkerRita extends Thread {
 				// Podria ponerse en el update
 				this.binGenerado();
 				if (this.hayPedidoBinario()){
-					this.enviarArchivoBinario();
 					textoLog = "Envio del archivo Binario al cliente: "
 							+ this.nombreRobot + " (" +socket.getInetAddress().getHostAddress() + ")";
 					this.server.guardarLog(textoLog);
+					this.enviarArchivoBinario("batalla.bin");
+					this.enviarArchivoBinario("resultado-batalla.txt");
 				}
 				else
 					log.error("Falla del pedido binario del Cliente: "
@@ -217,13 +217,15 @@ public class ServerWorkerRita extends Thread {
 		return pedidoBin;
 	}
 
-	private void enviarArchivoBinario() {
+	private void enviarArchivoBinario(String nombre) {
 
 		try {
-			String fichero = Settings.getBinaryPath() + File.separator + "batalla.bin";
+			String ruta = Settings.getInstallPath();
+			if (nombre == "batalla.bin")
+				ruta = Settings.getBinaryPath();
+			String fichero = ruta + File.separator + nombre;
 			boolean enviadoUltimo = false;
-			// Se abre el fichero.
-			FileInputStream fis = new FileInputStream(fichero);
+			fis = new FileInputStream(fichero);
 
 			// Se instancia y rellena un mensaje de envio de fichero
 			MensajeTomaFichero mensaje = new MensajeTomaFichero();

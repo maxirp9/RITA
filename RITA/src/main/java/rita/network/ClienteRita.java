@@ -153,7 +153,10 @@ public class ClienteRita extends Thread {
 					log.info("Pide el binario el cliente: "
 							+ getMiDireccion());
 					DialogClientRita.startWait();
-					conexionServidor.recibirArchivo("batalla.copia.bin");
+					conexionServidor.recibirArchivo(Settings.getBinaryPath() + File.separator + "batalla.copia.bin");
+					conexionServidor.recibirArchivo(Settings.getInstallPath() + File.separator + "resultado-batalla.txt");
+					log.info("Paso el resultado: "
+							+ getMiDireccion());
 			
 				if(this.ejecutarRobocode)
 					ejecutarRobocode();

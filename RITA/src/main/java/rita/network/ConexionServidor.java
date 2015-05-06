@@ -28,6 +28,7 @@ public class ConexionServidor implements ActionListener {
     private Socket socket; 
     private ObjectOutputStream salidaDatos;
     private ObjectInputStream entradaDatos;
+	private FileInputStream fis;
     
     public ConexionServidor(Socket socket, JTextField tfMensaje, String usuario) {
         this.socket = socket;
@@ -71,8 +72,7 @@ public class ConexionServidor implements ActionListener {
 			String fichero = Settings.getRobotsPath() + File.separator + Settings.getProperty("defaultpackage") + File.separator + nombre + ".java";
 
 			boolean enviadoUltimo = false;
-			// Se abre el fichero.
-			FileInputStream fis = new FileInputStream(fichero);
+			fis = new FileInputStream(fichero);
 
 			// Se instancia y rellena un mensaje de envio de fichero
 			MensajeTomaFichero mensaje = new MensajeTomaFichero();
@@ -133,7 +133,7 @@ public class ConexionServidor implements ActionListener {
 			// Se abre un fichero para empezar a copiar lo que se reciba.
 			// FileOutputStream fos = new FileOutputStream(mensaje.nombreFichero
 			// + "_copia");
-			FileOutputStream fos = new FileOutputStream(Settings.getBinaryPath() + File.separator + nombre);
+			FileOutputStream fos = new FileOutputStream(nombre);
 
 			MensajeTomaFichero mensajeRecibido;
 			Object mensajeAux;
